@@ -1,0 +1,12 @@
+<package>
+  <description brief="farley_ros">
+    Ros package for ME 597 Group 2 (Farley).
+  </description>
+
+  <author>Group 2</author>
+  <license>GPL</license>
+  <review status="unreviewed" notes=""/>
+  <depend package="rospy"/>
+  <depend package="clearpath_horizon"/>
+  <depend package="joy"/>
+</package>

@@ -34,7 +34,6 @@ class Speedometer:
     curTicks = encoders.ticks[0]
 
     dt = (curTime - self.lastTime).to_sec()
-    print(dt)
     vel = float(curTicks - self.lastTicks) / dt
     self.speedCb(vel, curTime)
 

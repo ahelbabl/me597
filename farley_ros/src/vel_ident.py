@@ -11,23 +11,33 @@ from clearpath_horizon.msg import RawEncoders
 
 rospy.init_node('vel_ident')
 
+def saturate(val, limit):
+  """ Returns val, saturated into [-limit,+limit] """
+  if val > limit:
+     return limit
+  if val < -limit:
+     return -limit
+  return val
+
 class Controller:
   def __init__(self):
     self.cmdPub = rospy.Publisher('/clearpath/robots/default/cmd_vel', Twist)
     self.rate = rospy.Rate(20);
 
     # Proportional control constant
-    self.kp = 0.5;
+    self.kp = 0.002;
+    self.ki = 0.001; 
+    self.integrator = 0.0;
 
     # Reference and control signals:
-    self.velRef = 0.0  # [tics/s]
+    self.velRef = 2000.0  # [tics/s]
     self.velCtrl = 0.0 # [-100,100]
 
     # Velocity measurement state:
-    self.lastMsmtTime = 0 # [ns]
-    self.lastTicks = 0    # [ticks]
+    self.lastMsmtTime = None 
+    self.lastTicks = 0 # [ticks]
 
-  def _publish():
+  def _publish(self):
     """ Publishes the current control signal """
     velCmd = Twist()
     velCmd.linear.x = self.velCtrl
@@ -42,21 +52,25 @@ class Controller:
 
   def measurement(self, ticks):
     """ Accepts new measurement data, and adjusts the control signal """
-    if self.lastMsmt == 0:
+    if self.lastMsmtTime is None:
       # First measurement, have no vel data.
-      self.lastMsmtTime = rospy.get_rostime().nsecs
+      self.lastMsmtTime = rospy.get_rostime()
       self.lastTicks = ticks
       return
 
     # Calculate current speed:
-    curTime = rospy.get_rostime().nsecs
-    dt = 0.000001 * (curTime - self.lastMsmtTime) #[ns->s]
+    curTime = rospy.get_rostime()
+    dt = (curTime - self.lastMsmtTime).to_sec()
     vel = float(ticks - self.lastTicks) / dt
 
     # Calculate and apply control signal:
-    self.velCtrl = kp * (self.velRef - self.velCtrl)
+    p = self.kp * (self.velRef - vel)
+    self.integrator += self.ki * (self.velRef - vel)
+    self.integrator = saturate(self.integrator, 100)
+    self.velCtrl = saturate(p + self.integrator, 100);
+
     self._publish()
-    print("y: {0}, u:{1}".format(vel, self.velCtrl))
+    print("dt: {0}, y: {1}, u:{2}".format(dt, vel, self.velCtrl))
     
     self.lastMsmtTime = curTime
     self.lastTicks = ticks
@@ -73,4 +87,5 @@ def encodersCb(encoders):
 rospy.Subscriber('/clearpath/robots/default/data/raw_encoders', 
     RawEncoders, encodersCb)
 
+c.execute()
 

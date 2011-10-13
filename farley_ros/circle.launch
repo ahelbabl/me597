@@ -4,6 +4,8 @@
   </machine>
 
   <group ns="clearpath/robots/default">  
+    <node pkg="farley_ros" type="circle.py" name="circle" output="screen"/>
+
     <node pkg="clearpath_horizon" type="horizon.py" name="horizon" machine="robot" respawn="true" output="screen">
      <!-- Uncomment the following line to manually specify serial device, rather
 	   than autodetecting between available /dev/ttyUSB devices.

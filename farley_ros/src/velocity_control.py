@@ -10,6 +10,7 @@ class VelocityControl:
   def __init__(self):
     self.cmdPub = rospy.Publisher('/clearpath/robots/default/cmd_vel', Twist)
     self.rate = rospy.Rate(20);
+    self.spd = Speedometer(self._velocityCb)
 
     # Proportional control constant
     self.kp = 0.002;
@@ -19,10 +20,6 @@ class VelocityControl:
     # Reference and control signals:
     self.velRef = 2000.0  # [tics/s]
     self.velCtrl = 0.0 # [-100,100]
-
-    # Velocity measurement state:
-    self.lastMsmtTime = None 
-    self.lastTicks = 0 # [ticks]
 
   def _publish(self):
     """ Publishes the current control signal """
@@ -45,19 +42,8 @@ class VelocityControl:
       self.rate.sleep()
       self._publish()
 
-  def measurement(self, ticks):
+  def _velocityCb(self, vel, time):
     """ Accepts new measurement data, and adjusts the control signal """
-    if self.lastMsmtTime is None:
-      # First measurement, have no vel data.
-      self.lastMsmtTime = rospy.get_rostime()
-      self.lastTicks = ticks
-      return
-
-    # Calculate current speed:
-    curTime = rospy.get_rostime()
-    dt = (curTime - self.lastMsmtTime).to_sec()
-    vel = float(ticks - self.lastTicks) / dt
-
     # Calculate and apply control signal:
     p = self.kp * (self.velRef - vel)
     self.integrator += self.ki * (self.velRef - vel)
@@ -65,7 +51,4 @@ class VelocityControl:
     self.velCtrl = self._saturate(p + self.integrator, 100);
 
     self._publish()
-    
-    self.lastMsmtTime = curTime
-    self.lastTicks = ticks
     return

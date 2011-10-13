@@ -8,11 +8,11 @@ import rospy
 
 from geometry_msgs.msg import Twist
 from clearpath_horizon.msg import RawEncoders
-from velocity_control import Controller
+from velocity_control import VelocityControl
 
 rospy.init_node('vel_ident')
 
-c = Controller()
+c = VelocityControl()
 
 def encodersCb(encoders):
   if len(encoders.ticks) != 1:

@@ -103,5 +103,7 @@ am = coeffs(2)
 
 % Create continuous and discrete time system models:
 sysc = tf([Km*am], [1 am]);
-sysd = tf((Km*am*ts)/(am*ts + 2)*[1 1], [1 (am*ts-2)/(am*ts+2)], ts);
+zn = (Km*am*ts)/(am*ts + 2)*[1 1];
+zd = cat(2, [1 (am*ts-2)/(am*ts+2)], zeros(1, delay));
+sysd = tf(zn, zd, ts);
 

@@ -21,14 +21,17 @@ curCmd = 0.0
 
 def speedCb(spd, time):
   outfile.write("{0} {1} {2}\n".format( (time-startTime).to_sec(), curCmd, spd))
+  print("v = {0}, u = {1}".format(spd, curCmd))
 
 spd = Speedometer(speedCb)
 
 while not rospy.is_shutdown():
   cmd = Twist()
   curCmd = 0.0
+  if int( 0.5 * (rospy.get_rostime() - startTime).to_sec() ) % 2 == 1:
+    curCmd = 100.0
   if int( 0.25 * (rospy.get_rostime() - startTime).to_sec() ) % 2 == 1:
-    curCmd = 50.0
+    curCmd = -curCmd
 
   cmd.linear.x = curCmd
   cmdVel.publish(cmd) 

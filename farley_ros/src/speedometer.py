@@ -35,6 +35,7 @@ class Speedometer:
 
     dt = (curTime - self.lastTime).to_sec()
     vel = float(curTicks - self.lastTicks) / dt
+    vel = vel * 11.519E-6
     self.speedCb(vel, curTime)
 
     self.lastTime = curTime

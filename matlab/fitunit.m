@@ -16,6 +16,13 @@ TIME = 1;
 IN = 2;
 OUT = 3;
 
+% Sample time
+ts = 1/20;
+
+% Input is some multiple of a unit step, normalize to unit step
+data(:,OUT) = data(:,OUT) / max(data(:,IN));
+data(:,IN) = data(:,IN) / max(data(:,IN));
+
 % Data is a series of positive and negative steps, separated by zeros.
 % Find the extents of each of the steps.
 stepstarts = zeros(0);
@@ -56,7 +63,7 @@ end
 delays = zeros(steps,1);
 for i = 1:steps
 	for j = 1:shortest
-		if abs(split(i,j,OUT)) > 0.01
+		if abs(split(i,j,OUT)) > 1E-4
 			delays(i) = j;
 			break
 		end
@@ -65,7 +72,7 @@ end
 delay = floor(mean(delays))
 
 % Remove the delays
-split = split(:,4:end,:);
+split = split(:,delay:end,:);
 % Set the beginning of each step to t=0
 for i = 1:steps
 	split(i,:,TIME) = split(i,:,TIME) - split(i,1,TIME);
@@ -80,7 +87,7 @@ for i = 1:steps
 end
 lsqopts = optimset('MaxFunEvals', 1000);
 % Fit an exponential approach to our data
-coeffs = lsqnonlin(@diff_exp_approach, [0.35, 1.0], [], [], lsqopts, x, y)
+coeffs = lsqnonlin(@diff_exp_approach, [0.35, 1.0], [], [], lsqopts, x, y);
 
 % Plot measured data points and the fit function.
 clf
@@ -90,4 +97,11 @@ for i = 1:steps
 end
 plot([0:0.02:2], coeffs(1)*(1-exp(-coeffs(2)*[0:0.02:2])), 'r');
 hold off
+
+Km = coeffs(1)
+am = coeffs(2)
+
+% Create continuous and discrete time system models:
+sysc = tf([Km*am], [1 am]);
+sysd = tf([(Km*am*ts)/(am*ts + 2)], [1 (am*ts-2)/(am*ts+2)], ts);
 

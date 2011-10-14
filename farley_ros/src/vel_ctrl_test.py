@@ -15,5 +15,4 @@ rospy.init_node('vel_ident')
 
 c = VelocityControl()
 c.setVelocity(0.2);
-c.execute()
-
+rospy.spin()

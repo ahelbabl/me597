@@ -44,13 +44,6 @@ class VelocityControl:
     """ Set the velocity reference """
     self.velRef = ref
 
-  def execute(self):
-    """ Executes the control loop. """
-    # Vel cmd must be sent regularly, even if not changed (due to dead-man)
-    while not rospy.is_shutdown():
-      self.rate.sleep()
-      self._publish()
-
   def _velocityCb(self, vel, time):
     """ Accepts new measurement data, and adjusts the control signal """
     # Calculate the control signal:

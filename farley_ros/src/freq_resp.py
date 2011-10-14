@@ -14,7 +14,7 @@ from speedometer import Speedometer
 import os
 import math
 
-rospy.init_node('vel_ident')
+rospy.init_node('freq_resp')
 
 cmdVel = rospy.Publisher('/clearpath/robots/default/cmd_vel', Twist)
 startTime = rospy.get_rostime()

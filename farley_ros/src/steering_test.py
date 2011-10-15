@@ -10,5 +10,8 @@ from steering_control import SteeringControl
 rospy.init_node('steering_test')
 
 c = SteeringControl()
+c.setSteeringAngle(0.0)
+c.setVelocity(0.0)
+c.start()
 
 rospy.spin()

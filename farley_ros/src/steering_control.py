@@ -32,7 +32,7 @@ class SteeringControl(VelocityControl):
 
   def setSteeringAngle(self, ang):
     """ Set the steering angle to ang (radian) """
-    out = -266.7 * ang - 7;
+    out = 266.7 * ang - 7.0;
     self.steerCtrl = self._saturate(out, 100)
    
   def _publish(self):

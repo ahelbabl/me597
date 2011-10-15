@@ -3,7 +3,7 @@
 # Test the velocity controller.
 # Just runs with a constant setpoint.
 
-import roslib; roslib.load_manifest('clearpath_horizon')
+import roslib; roslib.load_manifest('farley_ros')
 import rospy
 
 from geometry_msgs.msg import Twist

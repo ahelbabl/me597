@@ -3,7 +3,7 @@
 # Provides a class which subscribes to encoder data, which it uses
 # to compute velocity.
 
-import roslib; roslib.load_manifest('clearpath_horizon')
+import roslib; roslib.load_manifest('farley_ros')
 import rospy
 from clearpath_horizon.msg import RawEncoders
 

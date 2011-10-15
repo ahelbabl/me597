@@ -29,6 +29,11 @@ class SteeringControl(VelocityControl):
     """ Set the target waypoint """
     self.xRef = x
     self.yRef = y
+
+  def setSteeringAngle(self, ang):
+    """ Set the steering angle to ang (radian) """
+    out = -266.7 * ang - 7;
+    self.steerCtrl = self._saturate(out, 100)
    
   def _publish(self):
     """ Publishes the current control signals """

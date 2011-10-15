@@ -2,7 +2,7 @@
 # Simple test node which gives the robot commands which result in it 
 # driving in a circle.
 
-import roslib; roslib.load_manifest('farley_ros')
+import roslib; roslib.load_manifest('clearpath_horizon')
 import rospy
 
 from geometry_msgs.msg import Twist
@@ -18,11 +18,15 @@ start = rospy.get_rostime().secs
 
 while not rospy.is_shutdown():
   rate.sleep()
+
   if (rospy.get_rostime().secs - start) < 2:
-    continue
+    cmd = Twist()
+    cmd.angular.z = 100;
+    cmd_pub.publish(cmd);
+    continue;
 
   cmd = Twist()
-  cmd.linear.x = 40;
-  cmd.angular.z = 50;
-  cmd_pub.publish(cmd)
+  cmd.linear.x = 0;
+  cmd.angular.z = 100;
+  cmd_pub.publish(cmd);
 

@@ -47,7 +47,7 @@ end
 
 % Trajectory
 figure(1);clf; hold on;
-plot([0 Tmax*v*cos(xp)], [0 Tmax*v*sin(xp)],'b--')
+plot([0 Tmax*v*cos(xp)], [0 Tmax*v*sin(xp)],'g--')
 plot(x0(1)*sin(x0(2)),x0(1)*cos(x0(2)))
 plot(p(:,1),p(:,2),'r');
 for t=1:300:length(T)

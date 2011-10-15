@@ -3,8 +3,10 @@
     ros-package-path="/opt/ros/diamondback/stacks:/home/wavelab/ROS_packages">
   </machine>
 
+  <node pkg="farley_ros" type="steering_test.py" name="steering_test" output="screen"/>
+  <node pkg="indoor_pos" type="socked_thread" name="socked_thread" output="screen"/>
+
   <group ns="clearpath/robots/default">  
-    <node pkg="farley_ros" type="vel_ident.py" name="vel_ident" output="screen"/>
 
     <node pkg="clearpath_horizon" type="horizon.py" name="horizon" machine="robot" respawn="true" output="screen">
      <!-- Uncomment the following line to manually specify serial device, rather
@@ -38,4 +40,3 @@
     </node>
   </group>
 </launch>
-

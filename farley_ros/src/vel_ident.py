@@ -3,7 +3,7 @@
 # Subjects the robot to a square wave, so that we can derive motor model constants
 # empirically.
 
-import roslib; roslib.load_manifest('clearpath_horizon')
+import roslib; roslib.load_manifest('farley_ros')
 import rospy
 
 from geometry_msgs.msg import Twist

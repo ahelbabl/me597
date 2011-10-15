@@ -8,5 +8,6 @@
   <review status="unreviewed" notes=""/>
   <depend package="rospy"/>
   <depend package="clearpath_horizon"/>
+  <depend package="indoor_pos"/>
   <depend package="joy"/>
 </package>

@@ -47,6 +47,29 @@ class SteeringControl(VelocityControl):
   def _poseCb(self, pose):
     """ Update steering command using current pose """
     print("Pose: x: {0}, y: {1}, h: {2}".format(pose.X, pose.Y, pose.Yaw))
+    
+    #system model variables
+    Tmax=5     #length of time
+    dt=0.001   #Time step
+    delta_max=(25*math.pi)/180
+    vel= VelocityControl()  #unit????
+    vel.setVelocity(5)
+    gain=2.5
+    l=1     #update this!!!!
+    #initialize vars
+    e_cur=0 ;e_next=0
+    psi_cur=pose.Yaw ;psi_next=0
+
+    x=pose.X; y=pose.Y
+    for i in range(len(Tmax/dt))
+	delta=psi_cur+math.atan2(k*e_cur,vel))
+	ederiv=vel*math.sin(psi_cur)-delta
+	psideriv=-(vel*math.sin(delta))/l
+	#update states
+	e_next=e_cur+dt*ederiv
+	psi_next=psi_cur+dt*psideriv
+	#position update
+	x=pose.X; y=pose.Y
 
     # Don't publish - we'll leave that to the velocity control
     # (Don't want to try to update too frequently)

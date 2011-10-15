@@ -8,3 +8,5 @@ import rospy
 from steering_control import SteeringControl
 
 c = SteeringControl()
+
+rospy.spin()

@@ -1,0 +1,28 @@
+<package>
+    <description brief="art_gazebo_plugins">
+       Contains a simplified Ackermann drive plugin. Simplified means that this plugin
+       treats the Ackermann drive as a tricycle, setting the velocities of the rear
+       drive wheels and setting the steering angle of a single steering joint. It is
+       assumed that the Gazebo description of the robot links two steerable wheels
+       to the steered joint in a fashion similar to the provided example robot model
+       in urdf/ackermann.urdf.xacro. The purpose of this custom plugin is to
+       build the ROS functionality directly into a proper Gazebo plugin, rather than
+       a node that communicates with Gazebo.
+    </description>
+    
+    <author>Nicu Stiurca</author>
+    <license>BSD</license>
+    <review status="unreviewed" notes=""/>
+    <url>http://ros.org/wiki/art_gazebo_plugins</url>
+    <depend package="roscpp"/>
+    <depend package="gazebo"/>
+    <depend package="gazebo_plugins"/>
+    <depend package="clearpath_horizon"/>
+
+    <export>
+        <gazebo plugin_path="${prefix}/lib" />
+    </export>    
+
+</package>
+
+

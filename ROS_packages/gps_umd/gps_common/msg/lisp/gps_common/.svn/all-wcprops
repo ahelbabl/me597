@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/gps_umd/gps_common/msg/lisp/gps_common
+END
+_package.lisp
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/gps_umd/gps_common/msg/lisp/gps_common/_package.lisp
+END
+_package_GPSFix.lisp
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/gps_umd/gps_common/msg/lisp/gps_common/_package_GPSFix.lisp
+END
+GPSStatus.lisp
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/gps_umd/gps_common/msg/lisp/gps_common/GPSStatus.lisp
+END
+GPSFix.lisp
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/gps_umd/gps_common/msg/lisp/gps_common/GPSFix.lisp
+END
+.GPSStatus.asd-dep
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/gps_umd/gps_common/msg/lisp/gps_common/.GPSStatus.asd-dep
+END
+.GPSFix.asd-dep
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/gps_umd/gps_common/msg/lisp/gps_common/.GPSFix.asd-dep
+END
+gps_common-msg.asd
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/gps_umd/gps_common/msg/lisp/gps_common/gps_common-msg.asd
+END
+_package_GPSStatus.lisp
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/gps_umd/gps_common/msg/lisp/gps_common/_package_GPSStatus.lisp
+END

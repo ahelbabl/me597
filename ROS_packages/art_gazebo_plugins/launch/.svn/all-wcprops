@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/wavelab/!svn/ver/1357/projects/me595/ROS_packages/art_gazebo_plugins/launch
+END
+ackermann_laser_mobile_base.launch
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/wavelab/!svn/ver/1357/projects/me595/ROS_packages/art_gazebo_plugins/launch/ackermann_laser_mobile_base.launch
+END
+ackermann_laser_empty_world.launch
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/wavelab/!svn/ver/1357/projects/me595/ROS_packages/art_gazebo_plugins/launch/ackermann_laser_empty_world.launch
+END

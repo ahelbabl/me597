@@ -1,0 +1,11 @@
+<launch>
+
+ <remap from="base_scan/scan" to="scan" />
+
+ <node name="rviz" pkg="rviz" type="rviz" respawn="false" output="screen" args="-d $(find main_control)/gazebo_rviz_view.vcg"/>
+
+ <node pkg="main_control" type="main_thread" name="main_thread" >
+ </node>
+
+ <include file="$(find art_gazebo_plugins)/launch/ackermann_laser_empty_world.launch"/>
+</launch>

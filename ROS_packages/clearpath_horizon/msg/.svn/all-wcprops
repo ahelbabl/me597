@@ -1,0 +1,167 @@
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/clearpath_horizon/msg
+END
+Distance.msg
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/clearpath_horizon/msg/Distance.msg
+END
+Orientation.msg
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/clearpath_horizon/msg/Orientation.msg
+END
+DifferentialControl.msg
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/clearpath_horizon/msg/DifferentialControl.msg
+END
+GPIO.msg
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/clearpath_horizon/msg/GPIO.msg
+END
+GPADCOutput.msg
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/clearpath_horizon/msg/GPADCOutput.msg
+END
+SafetyStatus.msg
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/clearpath_horizon/msg/SafetyStatus.msg
+END
+PlatformInfo.msg
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/clearpath_horizon/msg/PlatformInfo.msg
+END
+PowerStatus.msg
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/clearpath_horizon/msg/PowerStatus.msg
+END
+Joy.msg
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/clearpath_horizon/msg/Joy.msg
+END
+Encoders.msg
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/clearpath_horizon/msg/Encoders.msg
+END
+DistanceTiming.msg
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/clearpath_horizon/msg/DistanceTiming.msg
+END
+Announce.msg
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/clearpath_horizon/msg/Announce.msg
+END
+TurnSetpt.msg
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/clearpath_horizon/msg/TurnSetpt.msg
+END
+RotateRate.msg
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/clearpath_horizon/msg/RotateRate.msg
+END
+RawEncoders.msg
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/clearpath_horizon/msg/RawEncoders.msg
+END
+DifferentialSpeed.msg
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/clearpath_horizon/msg/DifferentialSpeed.msg
+END
+DifferentialOutput.msg
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/clearpath_horizon/msg/DifferentialOutput.msg
+END
+PowerSource.msg
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/clearpath_horizon/msg/PowerSource.msg
+END
+VelocitySetpt.msg
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/clearpath_horizon/msg/VelocitySetpt.msg
+END
+Encoder.msg
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/clearpath_horizon/msg/Encoder.msg
+END
+AckermannSetpt.msg
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/clearpath_horizon/msg/AckermannSetpt.msg
+END
+JoySwitch.msg
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/clearpath_horizon/msg/JoySwitch.msg
+END
+ProcessorStatus.msg
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/clearpath_horizon/msg/ProcessorStatus.msg
+END
+PlatformName.msg
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/clearpath_horizon/msg/PlatformName.msg
+END
+StateChange.msg
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/clearpath_horizon/msg/StateChange.msg
+END
+FirmwareInfo.msg
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/clearpath_horizon/msg/FirmwareInfo.msg
+END
+SystemStatus.msg
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/clearpath_horizon/msg/SystemStatus.msg
+END

@@ -1,0 +1,692 @@
+; Auto-generated. Do not edit!
+
+
+(in-package gps_common-msg)
+
+
+;//! \htmlinclude GPSFix.msg.html
+
+(defclass <GPSFix> (ros-message)
+  ((header
+    :reader header-val
+    :initarg :header
+    :type roslib-msg:<Header>
+    :initform (make-instance 'roslib-msg:<Header>))
+   (latitude
+    :reader latitude-val
+    :initarg :latitude
+    :type float
+    :initform 0.0)
+   (longitude
+    :reader longitude-val
+    :initarg :longitude
+    :type float
+    :initform 0.0)
+   (altitude
+    :reader altitude-val
+    :initarg :altitude
+    :type float
+    :initform 0.0)
+   (track
+    :reader track-val
+    :initarg :track
+    :type float
+    :initform 0.0)
+   (speed
+    :reader speed-val
+    :initarg :speed
+    :type float
+    :initform 0.0)
+   (climb
+    :reader climb-val
+    :initarg :climb
+    :type float
+    :initform 0.0)
+   (pitch
+    :reader pitch-val
+    :initarg :pitch
+    :type float
+    :initform 0.0)
+   (roll
+    :reader roll-val
+    :initarg :roll
+    :type float
+    :initform 0.0)
+   (dip
+    :reader dip-val
+    :initarg :dip
+    :type float
+    :initform 0.0)
+   (time
+    :reader time-val
+    :initarg :time
+    :type float
+    :initform 0.0)
+   (gdop
+    :reader gdop-val
+    :initarg :gdop
+    :type float
+    :initform 0.0)
+   (pdop
+    :reader pdop-val
+    :initarg :pdop
+    :type float
+    :initform 0.0)
+   (hdop
+    :reader hdop-val
+    :initarg :hdop
+    :type float
+    :initform 0.0)
+   (vdop
+    :reader vdop-val
+    :initarg :vdop
+    :type float
+    :initform 0.0)
+   (tdop
+    :reader tdop-val
+    :initarg :tdop
+    :type float
+    :initform 0.0)
+   (err
+    :reader err-val
+    :initarg :err
+    :type float
+    :initform 0.0)
+   (err_horz
+    :reader err_horz-val
+    :initarg :err_horz
+    :type float
+    :initform 0.0)
+   (err_vert
+    :reader err_vert-val
+    :initarg :err_vert
+    :type float
+    :initform 0.0)
+   (err_track
+    :reader err_track-val
+    :initarg :err_track
+    :type float
+    :initform 0.0)
+   (err_speed
+    :reader err_speed-val
+    :initarg :err_speed
+    :type float
+    :initform 0.0)
+   (err_climb
+    :reader err_climb-val
+    :initarg :err_climb
+    :type float
+    :initform 0.0)
+   (err_time
+    :reader err_time-val
+    :initarg :err_time
+    :type float
+    :initform 0.0)
+   (err_pitch
+    :reader err_pitch-val
+    :initarg :err_pitch
+    :type float
+    :initform 0.0)
+   (err_roll
+    :reader err_roll-val
+    :initarg :err_roll
+    :type float
+    :initform 0.0)
+   (err_dip
+    :reader err_dip-val
+    :initarg :err_dip
+    :type float
+    :initform 0.0))
+)
+(defmethod serialize ((msg <GPSFix>) ostream)
+  "Serializes a message object of type '<GPSFix>"
+  (serialize (slot-value msg 'header) ostream)
+  (let ((bits (roslisp-utils:encode-double-float-bits (slot-value msg 'latitude))))
+    (write-byte (ldb (byte 8 0) bits) ostream)
+    (write-byte (ldb (byte 8 8) bits) ostream)
+    (write-byte (ldb (byte 8 16) bits) ostream)
+    (write-byte (ldb (byte 8 24) bits) ostream)
+    (write-byte (ldb (byte 8 32) bits) ostream)
+    (write-byte (ldb (byte 8 40) bits) ostream)
+    (write-byte (ldb (byte 8 48) bits) ostream)
+    (write-byte (ldb (byte 8 56) bits) ostream))
+  (let ((bits (roslisp-utils:encode-double-float-bits (slot-value msg 'longitude))))
+    (write-byte (ldb (byte 8 0) bits) ostream)
+    (write-byte (ldb (byte 8 8) bits) ostream)
+    (write-byte (ldb (byte 8 16) bits) ostream)
+    (write-byte (ldb (byte 8 24) bits) ostream)
+    (write-byte (ldb (byte 8 32) bits) ostream)
+    (write-byte (ldb (byte 8 40) bits) ostream)
+    (write-byte (ldb (byte 8 48) bits) ostream)
+    (write-byte (ldb (byte 8 56) bits) ostream))
+  (let ((bits (roslisp-utils:encode-double-float-bits (slot-value msg 'altitude))))
+    (write-byte (ldb (byte 8 0) bits) ostream)
+    (write-byte (ldb (byte 8 8) bits) ostream)
+    (write-byte (ldb (byte 8 16) bits) ostream)
+    (write-byte (ldb (byte 8 24) bits) ostream)
+    (write-byte (ldb (byte 8 32) bits) ostream)
+    (write-byte (ldb (byte 8 40) bits) ostream)
+    (write-byte (ldb (byte 8 48) bits) ostream)
+    (write-byte (ldb (byte 8 56) bits) ostream))
+  (let ((bits (roslisp-utils:encode-double-float-bits (slot-value msg 'track))))
+    (write-byte (ldb (byte 8 0) bits) ostream)
+    (write-byte (ldb (byte 8 8) bits) ostream)
+    (write-byte (ldb (byte 8 16) bits) ostream)
+    (write-byte (ldb (byte 8 24) bits) ostream)
+    (write-byte (ldb (byte 8 32) bits) ostream)
+    (write-byte (ldb (byte 8 40) bits) ostream)
+    (write-byte (ldb (byte 8 48) bits) ostream)
+    (write-byte (ldb (byte 8 56) bits) ostream))
+  (let ((bits (roslisp-utils:encode-double-float-bits (slot-value msg 'speed))))
+    (write-byte (ldb (byte 8 0) bits) ostream)
+    (write-byte (ldb (byte 8 8) bits) ostream)
+    (write-byte (ldb (byte 8 16) bits) ostream)
+    (write-byte (ldb (byte 8 24) bits) ostream)
+    (write-byte (ldb (byte 8 32) bits) ostream)
+    (write-byte (ldb (byte 8 40) bits) ostream)
+    (write-byte (ldb (byte 8 48) bits) ostream)
+    (write-byte (ldb (byte 8 56) bits) ostream))
+  (let ((bits (roslisp-utils:encode-double-float-bits (slot-value msg 'climb))))
+    (write-byte (ldb (byte 8 0) bits) ostream)
+    (write-byte (ldb (byte 8 8) bits) ostream)
+    (write-byte (ldb (byte 8 16) bits) ostream)
+    (write-byte (ldb (byte 8 24) bits) ostream)
+    (write-byte (ldb (byte 8 32) bits) ostream)
+    (write-byte (ldb (byte 8 40) bits) ostream)
+    (write-byte (ldb (byte 8 48) bits) ostream)
+    (write-byte (ldb (byte 8 56) bits) ostream))
+  (let ((bits (roslisp-utils:encode-double-float-bits (slot-value msg 'pitch))))
+    (write-byte (ldb (byte 8 0) bits) ostream)
+    (write-byte (ldb (byte 8 8) bits) ostream)
+    (write-byte (ldb (byte 8 16) bits) ostream)
+    (write-byte (ldb (byte 8 24) bits) ostream)
+    (write-byte (ldb (byte 8 32) bits) ostream)
+    (write-byte (ldb (byte 8 40) bits) ostream)
+    (write-byte (ldb (byte 8 48) bits) ostream)
+    (write-byte (ldb (byte 8 56) bits) ostream))
+  (let ((bits (roslisp-utils:encode-double-float-bits (slot-value msg 'roll))))
+    (write-byte (ldb (byte 8 0) bits) ostream)
+    (write-byte (ldb (byte 8 8) bits) ostream)
+    (write-byte (ldb (byte 8 16) bits) ostream)
+    (write-byte (ldb (byte 8 24) bits) ostream)
+    (write-byte (ldb (byte 8 32) bits) ostream)
+    (write-byte (ldb (byte 8 40) bits) ostream)
+    (write-byte (ldb (byte 8 48) bits) ostream)
+    (write-byte (ldb (byte 8 56) bits) ostream))
+  (let ((bits (roslisp-utils:encode-double-float-bits (slot-value msg 'dip))))
+    (write-byte (ldb (byte 8 0) bits) ostream)
+    (write-byte (ldb (byte 8 8) bits) ostream)
+    (write-byte (ldb (byte 8 16) bits) ostream)
+    (write-byte (ldb (byte 8 24) bits) ostream)
+    (write-byte (ldb (byte 8 32) bits) ostream)
+    (write-byte (ldb (byte 8 40) bits) ostream)
+    (write-byte (ldb (byte 8 48) bits) ostream)
+    (write-byte (ldb (byte 8 56) bits) ostream))
+  (let ((bits (roslisp-utils:encode-double-float-bits (slot-value msg 'time))))
+    (write-byte (ldb (byte 8 0) bits) ostream)
+    (write-byte (ldb (byte 8 8) bits) ostream)
+    (write-byte (ldb (byte 8 16) bits) ostream)
+    (write-byte (ldb (byte 8 24) bits) ostream)
+    (write-byte (ldb (byte 8 32) bits) ostream)
+    (write-byte (ldb (byte 8 40) bits) ostream)
+    (write-byte (ldb (byte 8 48) bits) ostream)
+    (write-byte (ldb (byte 8 56) bits) ostream))
+  (let ((bits (roslisp-utils:encode-double-float-bits (slot-value msg 'gdop))))
+    (write-byte (ldb (byte 8 0) bits) ostream)
+    (write-byte (ldb (byte 8 8) bits) ostream)
+    (write-byte (ldb (byte 8 16) bits) ostream)
+    (write-byte (ldb (byte 8 24) bits) ostream)
+    (write-byte (ldb (byte 8 32) bits) ostream)
+    (write-byte (ldb (byte 8 40) bits) ostream)
+    (write-byte (ldb (byte 8 48) bits) ostream)
+    (write-byte (ldb (byte 8 56) bits) ostream))
+  (let ((bits (roslisp-utils:encode-double-float-bits (slot-value msg 'pdop))))
+    (write-byte (ldb (byte 8 0) bits) ostream)
+    (write-byte (ldb (byte 8 8) bits) ostream)
+    (write-byte (ldb (byte 8 16) bits) ostream)
+    (write-byte (ldb (byte 8 24) bits) ostream)
+    (write-byte (ldb (byte 8 32) bits) ostream)
+    (write-byte (ldb (byte 8 40) bits) ostream)
+    (write-byte (ldb (byte 8 48) bits) ostream)
+    (write-byte (ldb (byte 8 56) bits) ostream))
+  (let ((bits (roslisp-utils:encode-double-float-bits (slot-value msg 'hdop))))
+    (write-byte (ldb (byte 8 0) bits) ostream)
+    (write-byte (ldb (byte 8 8) bits) ostream)
+    (write-byte (ldb (byte 8 16) bits) ostream)
+    (write-byte (ldb (byte 8 24) bits) ostream)
+    (write-byte (ldb (byte 8 32) bits) ostream)
+    (write-byte (ldb (byte 8 40) bits) ostream)
+    (write-byte (ldb (byte 8 48) bits) ostream)
+    (write-byte (ldb (byte 8 56) bits) ostream))
+  (let ((bits (roslisp-utils:encode-double-float-bits (slot-value msg 'vdop))))
+    (write-byte (ldb (byte 8 0) bits) ostream)
+    (write-byte (ldb (byte 8 8) bits) ostream)
+    (write-byte (ldb (byte 8 16) bits) ostream)
+    (write-byte (ldb (byte 8 24) bits) ostream)
+    (write-byte (ldb (byte 8 32) bits) ostream)
+    (write-byte (ldb (byte 8 40) bits) ostream)
+    (write-byte (ldb (byte 8 48) bits) ostream)
+    (write-byte (ldb (byte 8 56) bits) ostream))
+  (let ((bits (roslisp-utils:encode-double-float-bits (slot-value msg 'tdop))))
+    (write-byte (ldb (byte 8 0) bits) ostream)
+    (write-byte (ldb (byte 8 8) bits) ostream)
+    (write-byte (ldb (byte 8 16) bits) ostream)
+    (write-byte (ldb (byte 8 24) bits) ostream)
+    (write-byte (ldb (byte 8 32) bits) ostream)
+    (write-byte (ldb (byte 8 40) bits) ostream)
+    (write-byte (ldb (byte 8 48) bits) ostream)
+    (write-byte (ldb (byte 8 56) bits) ostream))
+  (let ((bits (roslisp-utils:encode-double-float-bits (slot-value msg 'err))))
+    (write-byte (ldb (byte 8 0) bits) ostream)
+    (write-byte (ldb (byte 8 8) bits) ostream)
+    (write-byte (ldb (byte 8 16) bits) ostream)
+    (write-byte (ldb (byte 8 24) bits) ostream)
+    (write-byte (ldb (byte 8 32) bits) ostream)
+    (write-byte (ldb (byte 8 40) bits) ostream)
+    (write-byte (ldb (byte 8 48) bits) ostream)
+    (write-byte (ldb (byte 8 56) bits) ostream))
+  (let ((bits (roslisp-utils:encode-double-float-bits (slot-value msg 'err_horz))))
+    (write-byte (ldb (byte 8 0) bits) ostream)
+    (write-byte (ldb (byte 8 8) bits) ostream)
+    (write-byte (ldb (byte 8 16) bits) ostream)
+    (write-byte (ldb (byte 8 24) bits) ostream)
+    (write-byte (ldb (byte 8 32) bits) ostream)
+    (write-byte (ldb (byte 8 40) bits) ostream)
+    (write-byte (ldb (byte 8 48) bits) ostream)
+    (write-byte (ldb (byte 8 56) bits) ostream))
+  (let ((bits (roslisp-utils:encode-double-float-bits (slot-value msg 'err_vert))))
+    (write-byte (ldb (byte 8 0) bits) ostream)
+    (write-byte (ldb (byte 8 8) bits) ostream)
+    (write-byte (ldb (byte 8 16) bits) ostream)
+    (write-byte (ldb (byte 8 24) bits) ostream)
+    (write-byte (ldb (byte 8 32) bits) ostream)
+    (write-byte (ldb (byte 8 40) bits) ostream)
+    (write-byte (ldb (byte 8 48) bits) ostream)
+    (write-byte (ldb (byte 8 56) bits) ostream))
+  (let ((bits (roslisp-utils:encode-double-float-bits (slot-value msg 'err_track))))
+    (write-byte (ldb (byte 8 0) bits) ostream)
+    (write-byte (ldb (byte 8 8) bits) ostream)
+    (write-byte (ldb (byte 8 16) bits) ostream)
+    (write-byte (ldb (byte 8 24) bits) ostream)
+    (write-byte (ldb (byte 8 32) bits) ostream)
+    (write-byte (ldb (byte 8 40) bits) ostream)
+    (write-byte (ldb (byte 8 48) bits) ostream)
+    (write-byte (ldb (byte 8 56) bits) ostream))
+  (let ((bits (roslisp-utils:encode-double-float-bits (slot-value msg 'err_speed))))
+    (write-byte (ldb (byte 8 0) bits) ostream)
+    (write-byte (ldb (byte 8 8) bits) ostream)
+    (write-byte (ldb (byte 8 16) bits) ostream)
+    (write-byte (ldb (byte 8 24) bits) ostream)
+    (write-byte (ldb (byte 8 32) bits) ostream)
+    (write-byte (ldb (byte 8 40) bits) ostream)
+    (write-byte (ldb (byte 8 48) bits) ostream)
+    (write-byte (ldb (byte 8 56) bits) ostream))
+  (let ((bits (roslisp-utils:encode-double-float-bits (slot-value msg 'err_climb))))
+    (write-byte (ldb (byte 8 0) bits) ostream)
+    (write-byte (ldb (byte 8 8) bits) ostream)
+    (write-byte (ldb (byte 8 16) bits) ostream)
+    (write-byte (ldb (byte 8 24) bits) ostream)
+    (write-byte (ldb (byte 8 32) bits) ostream)
+    (write-byte (ldb (byte 8 40) bits) ostream)
+    (write-byte (ldb (byte 8 48) bits) ostream)
+    (write-byte (ldb (byte 8 56) bits) ostream))
+  (let ((bits (roslisp-utils:encode-double-float-bits (slot-value msg 'err_time))))
+    (write-byte (ldb (byte 8 0) bits) ostream)
+    (write-byte (ldb (byte 8 8) bits) ostream)
+    (write-byte (ldb (byte 8 16) bits) ostream)
+    (write-byte (ldb (byte 8 24) bits) ostream)
+    (write-byte (ldb (byte 8 32) bits) ostream)
+    (write-byte (ldb (byte 8 40) bits) ostream)
+    (write-byte (ldb (byte 8 48) bits) ostream)
+    (write-byte (ldb (byte 8 56) bits) ostream))
+  (let ((bits (roslisp-utils:encode-double-float-bits (slot-value msg 'err_pitch))))
+    (write-byte (ldb (byte 8 0) bits) ostream)
+    (write-byte (ldb (byte 8 8) bits) ostream)
+    (write-byte (ldb (byte 8 16) bits) ostream)
+    (write-byte (ldb (byte 8 24) bits) ostream)
+    (write-byte (ldb (byte 8 32) bits) ostream)
+    (write-byte (ldb (byte 8 40) bits) ostream)
+    (write-byte (ldb (byte 8 48) bits) ostream)
+    (write-byte (ldb (byte 8 56) bits) ostream))
+  (let ((bits (roslisp-utils:encode-double-float-bits (slot-value msg 'err_roll))))
+    (write-byte (ldb (byte 8 0) bits) ostream)
+    (write-byte (ldb (byte 8 8) bits) ostream)
+    (write-byte (ldb (byte 8 16) bits) ostream)
+    (write-byte (ldb (byte 8 24) bits) ostream)
+    (write-byte (ldb (byte 8 32) bits) ostream)
+    (write-byte (ldb (byte 8 40) bits) ostream)
+    (write-byte (ldb (byte 8 48) bits) ostream)
+    (write-byte (ldb (byte 8 56) bits) ostream))
+  (let ((bits (roslisp-utils:encode-double-float-bits (slot-value msg 'err_dip))))
+    (write-byte (ldb (byte 8 0) bits) ostream)
+    (write-byte (ldb (byte 8 8) bits) ostream)
+    (write-byte (ldb (byte 8 16) bits) ostream)
+    (write-byte (ldb (byte 8 24) bits) ostream)
+    (write-byte (ldb (byte 8 32) bits) ostream)
+    (write-byte (ldb (byte 8 40) bits) ostream)
+    (write-byte (ldb (byte 8 48) bits) ostream)
+    (write-byte (ldb (byte 8 56) bits) ostream))
+)
+(defmethod deserialize ((msg <GPSFix>) istream)
+  "Deserializes a message object of type '<GPSFix>"
+  (deserialize (slot-value msg 'header) istream)
+  (let ((bits 0))
+    (setf (ldb (byte 8 0) bits) (read-byte istream))
+    (setf (ldb (byte 8 8) bits) (read-byte istream))
+    (setf (ldb (byte 8 16) bits) (read-byte istream))
+    (setf (ldb (byte 8 24) bits) (read-byte istream))
+    (setf (ldb (byte 8 32) bits) (read-byte istream))
+    (setf (ldb (byte 8 40) bits) (read-byte istream))
+    (setf (ldb (byte 8 48) bits) (read-byte istream))
+    (setf (ldb (byte 8 56) bits) (read-byte istream))
+    (setf (slot-value msg 'latitude) (roslisp-utils:decode-double-float-bits bits)))
+  (let ((bits 0))
+    (setf (ldb (byte 8 0) bits) (read-byte istream))
+    (setf (ldb (byte 8 8) bits) (read-byte istream))
+    (setf (ldb (byte 8 16) bits) (read-byte istream))
+    (setf (ldb (byte 8 24) bits) (read-byte istream))
+    (setf (ldb (byte 8 32) bits) (read-byte istream))
+    (setf (ldb (byte 8 40) bits) (read-byte istream))
+    (setf (ldb (byte 8 48) bits) (read-byte istream))
+    (setf (ldb (byte 8 56) bits) (read-byte istream))
+    (setf (slot-value msg 'longitude) (roslisp-utils:decode-double-float-bits bits)))
+  (let ((bits 0))
+    (setf (ldb (byte 8 0) bits) (read-byte istream))
+    (setf (ldb (byte 8 8) bits) (read-byte istream))
+    (setf (ldb (byte 8 16) bits) (read-byte istream))
+    (setf (ldb (byte 8 24) bits) (read-byte istream))
+    (setf (ldb (byte 8 32) bits) (read-byte istream))
+    (setf (ldb (byte 8 40) bits) (read-byte istream))
+    (setf (ldb (byte 8 48) bits) (read-byte istream))
+    (setf (ldb (byte 8 56) bits) (read-byte istream))
+    (setf (slot-value msg 'altitude) (roslisp-utils:decode-double-float-bits bits)))
+  (let ((bits 0))
+    (setf (ldb (byte 8 0) bits) (read-byte istream))
+    (setf (ldb (byte 8 8) bits) (read-byte istream))
+    (setf (ldb (byte 8 16) bits) (read-byte istream))
+    (setf (ldb (byte 8 24) bits) (read-byte istream))
+    (setf (ldb (byte 8 32) bits) (read-byte istream))
+    (setf (ldb (byte 8 40) bits) (read-byte istream))
+    (setf (ldb (byte 8 48) bits) (read-byte istream))
+    (setf (ldb (byte 8 56) bits) (read-byte istream))
+    (setf (slot-value msg 'track) (roslisp-utils:decode-double-float-bits bits)))
+  (let ((bits 0))
+    (setf (ldb (byte 8 0) bits) (read-byte istream))
+    (setf (ldb (byte 8 8) bits) (read-byte istream))
+    (setf (ldb (byte 8 16) bits) (read-byte istream))
+    (setf (ldb (byte 8 24) bits) (read-byte istream))
+    (setf (ldb (byte 8 32) bits) (read-byte istream))
+    (setf (ldb (byte 8 40) bits) (read-byte istream))
+    (setf (ldb (byte 8 48) bits) (read-byte istream))
+    (setf (ldb (byte 8 56) bits) (read-byte istream))
+    (setf (slot-value msg 'speed) (roslisp-utils:decode-double-float-bits bits)))
+  (let ((bits 0))
+    (setf (ldb (byte 8 0) bits) (read-byte istream))
+    (setf (ldb (byte 8 8) bits) (read-byte istream))
+    (setf (ldb (byte 8 16) bits) (read-byte istream))
+    (setf (ldb (byte 8 24) bits) (read-byte istream))
+    (setf (ldb (byte 8 32) bits) (read-byte istream))
+    (setf (ldb (byte 8 40) bits) (read-byte istream))
+    (setf (ldb (byte 8 48) bits) (read-byte istream))
+    (setf (ldb (byte 8 56) bits) (read-byte istream))
+    (setf (slot-value msg 'climb) (roslisp-utils:decode-double-float-bits bits)))
+  (let ((bits 0))
+    (setf (ldb (byte 8 0) bits) (read-byte istream))
+    (setf (ldb (byte 8 8) bits) (read-byte istream))
+    (setf (ldb (byte 8 16) bits) (read-byte istream))
+    (setf (ldb (byte 8 24) bits) (read-byte istream))
+    (setf (ldb (byte 8 32) bits) (read-byte istream))
+    (setf (ldb (byte 8 40) bits) (read-byte istream))
+    (setf (ldb (byte 8 48) bits) (read-byte istream))
+    (setf (ldb (byte 8 56) bits) (read-byte istream))
+    (setf (slot-value msg 'pitch) (roslisp-utils:decode-double-float-bits bits)))
+  (let ((bits 0))
+    (setf (ldb (byte 8 0) bits) (read-byte istream))
+    (setf (ldb (byte 8 8) bits) (read-byte istream))
+    (setf (ldb (byte 8 16) bits) (read-byte istream))
+    (setf (ldb (byte 8 24) bits) (read-byte istream))
+    (setf (ldb (byte 8 32) bits) (read-byte istream))
+    (setf (ldb (byte 8 40) bits) (read-byte istream))
+    (setf (ldb (byte 8 48) bits) (read-byte istream))
+    (setf (ldb (byte 8 56) bits) (read-byte istream))
+    (setf (slot-value msg 'roll) (roslisp-utils:decode-double-float-bits bits)))
+  (let ((bits 0))
+    (setf (ldb (byte 8 0) bits) (read-byte istream))
+    (setf (ldb (byte 8 8) bits) (read-byte istream))
+    (setf (ldb (byte 8 16) bits) (read-byte istream))
+    (setf (ldb (byte 8 24) bits) (read-byte istream))
+    (setf (ldb (byte 8 32) bits) (read-byte istream))
+    (setf (ldb (byte 8 40) bits) (read-byte istream))
+    (setf (ldb (byte 8 48) bits) (read-byte istream))
+    (setf (ldb (byte 8 56) bits) (read-byte istream))
+    (setf (slot-value msg 'dip) (roslisp-utils:decode-double-float-bits bits)))
+  (let ((bits 0))
+    (setf (ldb (byte 8 0) bits) (read-byte istream))
+    (setf (ldb (byte 8 8) bits) (read-byte istream))
+    (setf (ldb (byte 8 16) bits) (read-byte istream))
+    (setf (ldb (byte 8 24) bits) (read-byte istream))
+    (setf (ldb (byte 8 32) bits) (read-byte istream))
+    (setf (ldb (byte 8 40) bits) (read-byte istream))
+    (setf (ldb (byte 8 48) bits) (read-byte istream))
+    (setf (ldb (byte 8 56) bits) (read-byte istream))
+    (setf (slot-value msg 'time) (roslisp-utils:decode-double-float-bits bits)))
+  (let ((bits 0))
+    (setf (ldb (byte 8 0) bits) (read-byte istream))
+    (setf (ldb (byte 8 8) bits) (read-byte istream))
+    (setf (ldb (byte 8 16) bits) (read-byte istream))
+    (setf (ldb (byte 8 24) bits) (read-byte istream))
+    (setf (ldb (byte 8 32) bits) (read-byte istream))
+    (setf (ldb (byte 8 40) bits) (read-byte istream))
+    (setf (ldb (byte 8 48) bits) (read-byte istream))
+    (setf (ldb (byte 8 56) bits) (read-byte istream))
+    (setf (slot-value msg 'gdop) (roslisp-utils:decode-double-float-bits bits)))
+  (let ((bits 0))
+    (setf (ldb (byte 8 0) bits) (read-byte istream))
+    (setf (ldb (byte 8 8) bits) (read-byte istream))
+    (setf (ldb (byte 8 16) bits) (read-byte istream))
+    (setf (ldb (byte 8 24) bits) (read-byte istream))
+    (setf (ldb (byte 8 32) bits) (read-byte istream))
+    (setf (ldb (byte 8 40) bits) (read-byte istream))
+    (setf (ldb (byte 8 48) bits) (read-byte istream))
+    (setf (ldb (byte 8 56) bits) (read-byte istream))
+    (setf (slot-value msg 'pdop) (roslisp-utils:decode-double-float-bits bits)))
+  (let ((bits 0))
+    (setf (ldb (byte 8 0) bits) (read-byte istream))
+    (setf (ldb (byte 8 8) bits) (read-byte istream))
+    (setf (ldb (byte 8 16) bits) (read-byte istream))
+    (setf (ldb (byte 8 24) bits) (read-byte istream))
+    (setf (ldb (byte 8 32) bits) (read-byte istream))
+    (setf (ldb (byte 8 40) bits) (read-byte istream))
+    (setf (ldb (byte 8 48) bits) (read-byte istream))
+    (setf (ldb (byte 8 56) bits) (read-byte istream))
+    (setf (slot-value msg 'hdop) (roslisp-utils:decode-double-float-bits bits)))
+  (let ((bits 0))
+    (setf (ldb (byte 8 0) bits) (read-byte istream))
+    (setf (ldb (byte 8 8) bits) (read-byte istream))
+    (setf (ldb (byte 8 16) bits) (read-byte istream))
+    (setf (ldb (byte 8 24) bits) (read-byte istream))
+    (setf (ldb (byte 8 32) bits) (read-byte istream))
+    (setf (ldb (byte 8 40) bits) (read-byte istream))
+    (setf (ldb (byte 8 48) bits) (read-byte istream))
+    (setf (ldb (byte 8 56) bits) (read-byte istream))
+    (setf (slot-value msg 'vdop) (roslisp-utils:decode-double-float-bits bits)))
+  (let ((bits 0))
+    (setf (ldb (byte 8 0) bits) (read-byte istream))
+    (setf (ldb (byte 8 8) bits) (read-byte istream))
+    (setf (ldb (byte 8 16) bits) (read-byte istream))
+    (setf (ldb (byte 8 24) bits) (read-byte istream))
+    (setf (ldb (byte 8 32) bits) (read-byte istream))
+    (setf (ldb (byte 8 40) bits) (read-byte istream))
+    (setf (ldb (byte 8 48) bits) (read-byte istream))
+    (setf (ldb (byte 8 56) bits) (read-byte istream))
+    (setf (slot-value msg 'tdop) (roslisp-utils:decode-double-float-bits bits)))
+  (let ((bits 0))
+    (setf (ldb (byte 8 0) bits) (read-byte istream))
+    (setf (ldb (byte 8 8) bits) (read-byte istream))
+    (setf (ldb (byte 8 16) bits) (read-byte istream))
+    (setf (ldb (byte 8 24) bits) (read-byte istream))
+    (setf (ldb (byte 8 32) bits) (read-byte istream))
+    (setf (ldb (byte 8 40) bits) (read-byte istream))
+    (setf (ldb (byte 8 48) bits) (read-byte istream))
+    (setf (ldb (byte 8 56) bits) (read-byte istream))
+    (setf (slot-value msg 'err) (roslisp-utils:decode-double-float-bits bits)))
+  (let ((bits 0))
+    (setf (ldb (byte 8 0) bits) (read-byte istream))
+    (setf (ldb (byte 8 8) bits) (read-byte istream))
+    (setf (ldb (byte 8 16) bits) (read-byte istream))
+    (setf (ldb (byte 8 24) bits) (read-byte istream))
+    (setf (ldb (byte 8 32) bits) (read-byte istream))
+    (setf (ldb (byte 8 40) bits) (read-byte istream))
+    (setf (ldb (byte 8 48) bits) (read-byte istream))
+    (setf (ldb (byte 8 56) bits) (read-byte istream))
+    (setf (slot-value msg 'err_horz) (roslisp-utils:decode-double-float-bits bits)))
+  (let ((bits 0))
+    (setf (ldb (byte 8 0) bits) (read-byte istream))
+    (setf (ldb (byte 8 8) bits) (read-byte istream))
+    (setf (ldb (byte 8 16) bits) (read-byte istream))
+    (setf (ldb (byte 8 24) bits) (read-byte istream))
+    (setf (ldb (byte 8 32) bits) (read-byte istream))
+    (setf (ldb (byte 8 40) bits) (read-byte istream))
+    (setf (ldb (byte 8 48) bits) (read-byte istream))
+    (setf (ldb (byte 8 56) bits) (read-byte istream))
+    (setf (slot-value msg 'err_vert) (roslisp-utils:decode-double-float-bits bits)))
+  (let ((bits 0))
+    (setf (ldb (byte 8 0) bits) (read-byte istream))
+    (setf (ldb (byte 8 8) bits) (read-byte istream))
+    (setf (ldb (byte 8 16) bits) (read-byte istream))
+    (setf (ldb (byte 8 24) bits) (read-byte istream))
+    (setf (ldb (byte 8 32) bits) (read-byte istream))
+    (setf (ldb (byte 8 40) bits) (read-byte istream))
+    (setf (ldb (byte 8 48) bits) (read-byte istream))
+    (setf (ldb (byte 8 56) bits) (read-byte istream))
+    (setf (slot-value msg 'err_track) (roslisp-utils:decode-double-float-bits bits)))
+  (let ((bits 0))
+    (setf (ldb (byte 8 0) bits) (read-byte istream))
+    (setf (ldb (byte 8 8) bits) (read-byte istream))
+    (setf (ldb (byte 8 16) bits) (read-byte istream))
+    (setf (ldb (byte 8 24) bits) (read-byte istream))
+    (setf (ldb (byte 8 32) bits) (read-byte istream))
+    (setf (ldb (byte 8 40) bits) (read-byte istream))
+    (setf (ldb (byte 8 48) bits) (read-byte istream))
+    (setf (ldb (byte 8 56) bits) (read-byte istream))
+    (setf (slot-value msg 'err_speed) (roslisp-utils:decode-double-float-bits bits)))
+  (let ((bits 0))
+    (setf (ldb (byte 8 0) bits) (read-byte istream))
+    (setf (ldb (byte 8 8) bits) (read-byte istream))
+    (setf (ldb (byte 8 16) bits) (read-byte istream))
+    (setf (ldb (byte 8 24) bits) (read-byte istream))
+    (setf (ldb (byte 8 32) bits) (read-byte istream))
+    (setf (ldb (byte 8 40) bits) (read-byte istream))
+    (setf (ldb (byte 8 48) bits) (read-byte istream))
+    (setf (ldb (byte 8 56) bits) (read-byte istream))
+    (setf (slot-value msg 'err_climb) (roslisp-utils:decode-double-float-bits bits)))
+  (let ((bits 0))
+    (setf (ldb (byte 8 0) bits) (read-byte istream))
+    (setf (ldb (byte 8 8) bits) (read-byte istream))
+    (setf (ldb (byte 8 16) bits) (read-byte istream))
+    (setf (ldb (byte 8 24) bits) (read-byte istream))
+    (setf (ldb (byte 8 32) bits) (read-byte istream))
+    (setf (ldb (byte 8 40) bits) (read-byte istream))
+    (setf (ldb (byte 8 48) bits) (read-byte istream))
+    (setf (ldb (byte 8 56) bits) (read-byte istream))
+    (setf (slot-value msg 'err_time) (roslisp-utils:decode-double-float-bits bits)))
+  (let ((bits 0))
+    (setf (ldb (byte 8 0) bits) (read-byte istream))
+    (setf (ldb (byte 8 8) bits) (read-byte istream))
+    (setf (ldb (byte 8 16) bits) (read-byte istream))
+    (setf (ldb (byte 8 24) bits) (read-byte istream))
+    (setf (ldb (byte 8 32) bits) (read-byte istream))
+    (setf (ldb (byte 8 40) bits) (read-byte istream))
+    (setf (ldb (byte 8 48) bits) (read-byte istream))
+    (setf (ldb (byte 8 56) bits) (read-byte istream))
+    (setf (slot-value msg 'err_pitch) (roslisp-utils:decode-double-float-bits bits)))
+  (let ((bits 0))
+    (setf (ldb (byte 8 0) bits) (read-byte istream))
+    (setf (ldb (byte 8 8) bits) (read-byte istream))
+    (setf (ldb (byte 8 16) bits) (read-byte istream))
+    (setf (ldb (byte 8 24) bits) (read-byte istream))
+    (setf (ldb (byte 8 32) bits) (read-byte istream))
+    (setf (ldb (byte 8 40) bits) (read-byte istream))
+    (setf (ldb (byte 8 48) bits) (read-byte istream))
+    (setf (ldb (byte 8 56) bits) (read-byte istream))
+    (setf (slot-value msg 'err_roll) (roslisp-utils:decode-double-float-bits bits)))
+  (let ((bits 0))
+    (setf (ldb (byte 8 0) bits) (read-byte istream))
+    (setf (ldb (byte 8 8) bits) (read-byte istream))
+    (setf (ldb (byte 8 16) bits) (read-byte istream))
+    (setf (ldb (byte 8 24) bits) (read-byte istream))
+    (setf (ldb (byte 8 32) bits) (read-byte istream))
+    (setf (ldb (byte 8 40) bits) (read-byte istream))
+    (setf (ldb (byte 8 48) bits) (read-byte istream))
+    (setf (ldb (byte 8 56) bits) (read-byte istream))
+    (setf (slot-value msg 'err_dip) (roslisp-utils:decode-double-float-bits bits)))
+  msg
+)
+(defmethod ros-datatype ((msg (eql '<GPSFix>)))
+  "Returns string type for a message object of type '<GPSFix>"
+  "gps_common/GPSFix")
+(defmethod md5sum ((type (eql '<GPSFix>)))
+  "Returns md5sum for a message object of type '<GPSFix>"
+  "0ae01adfd96ac75f78c023bbead08337")
+(defmethod message-definition ((type (eql '<GPSFix>)))
+  "Returns full string definition for message of type '<GPSFix>"
+  (format nil "Header header~%~%# Latitude (degrees). Positive is north of equator; negative is south.~%float64 latitude~%~%# Longitude (degrees). Positive is east of prime meridian, negative south.~%float64 longitude~%~%# Altitude (meters). Positive is above reference (e.g., sea level).~%float64 altitude~%~%# Direction (degrees from north)~%float64 track~%~%# Ground speed (meters/second)~%float64 speed~%~%# Vertical speed (meters/second)~%float64 climb~%~%# Device orientation (units in degrees)~%float64 pitch~%float64 roll~%float64 dip~%~%# GPS time~%float64 time~%~%# Total (positional-temporal) dilution of precision~%float64 gdop~%~%# Positional (3D) dilution of precision~%float64 pdop~%~%# Horizontal dilution of precision~%float64 hdop~%~%# Vertical dilution of precision~%float64 vdop~%~%# Temporal dilution of precision~%float64 tdop~%~%# Spherical position uncertainty (meters) [epe]~%float64 err~%~%# Horizontal position uncertainty (meters) [eph]~%float64 err_horz~%~%# Vertical position uncertainty (meters) [epv]~%float64 err_vert~%~%# Track uncertainty (degrees) [epd]~%float64 err_track~%~%# Ground speed uncertainty (meters/second) [eps]~%float64 err_speed~%~%# Vertical speed uncertainty (meters/second) [epc]~%float64 err_climb~%~%# Temporal uncertainty [ept]~%float64 err_time~%~%# Orientation uncertainty (degrees)~%float64 err_pitch~%float64 err_roll~%float64 err_dip~%~%~%================================================================================~%MSG: roslib/Header~%# Standard metadata for higher-level stamped data types.~%# This is generally used to communicate timestamped data ~%# in a particular coordinate frame.~%# ~%# sequence ID: consecutively increasing ID ~%uint32 seq~%#Two-integer timestamp that is expressed as:~%# * stamp.secs: seconds (stamp_secs) since epoch~%# * stamp.nsecs: nanoseconds since stamp_secs~%# time-handling sugar is provided by the client library~%time stamp~%#Frame this data is associated with~%# 0: no frame~%# 1: global frame~%string frame_id~%~%~%"))
+(defmethod serialization-length ((msg <GPSFix>))
+  (+ 0
+     (serialization-length (slot-value msg 'header))
+     8
+     8
+     8
+     8
+     8
+     8
+     8
+     8
+     8
+     8
+     8
+     8
+     8
+     8
+     8
+     8
+     8
+     8
+     8
+     8
+     8
+     8
+     8
+     8
+     8
+))
+(defmethod ros-message-to-list ((msg <GPSFix>))
+  "Converts a ROS message object to a list"
+  (list '<GPSFix>
+    (cons ':header (header-val msg))
+    (cons ':latitude (latitude-val msg))
+    (cons ':longitude (longitude-val msg))
+    (cons ':altitude (altitude-val msg))
+    (cons ':track (track-val msg))
+    (cons ':speed (speed-val msg))
+    (cons ':climb (climb-val msg))
+    (cons ':pitch (pitch-val msg))
+    (cons ':roll (roll-val msg))
+    (cons ':dip (dip-val msg))
+    (cons ':time (time-val msg))
+    (cons ':gdop (gdop-val msg))
+    (cons ':pdop (pdop-val msg))
+    (cons ':hdop (hdop-val msg))
+    (cons ':vdop (vdop-val msg))
+    (cons ':tdop (tdop-val msg))
+    (cons ':err (err-val msg))
+    (cons ':err_horz (err_horz-val msg))
+    (cons ':err_vert (err_vert-val msg))
+    (cons ':err_track (err_track-val msg))
+    (cons ':err_speed (err_speed-val msg))
+    (cons ':err_climb (err_climb-val msg))
+    (cons ':err_time (err_time-val msg))
+    (cons ':err_pitch (err_pitch-val msg))
+    (cons ':err_roll (err_roll-val msg))
+    (cons ':err_dip (err_dip-val msg))
+))

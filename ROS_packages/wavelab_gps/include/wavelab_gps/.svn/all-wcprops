@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/wavelab/!svn/ver/829/projects/me595/ROS_packages/wavelab_gps/include/wavelab_gps
+END
+gps_thread.h
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/wavelab/!svn/ver/829/projects/me595/ROS_packages/wavelab_gps/include/wavelab_gps/gps_thread.h
+END
+gps_handle.h
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/wavelab/!svn/ver/829/projects/me595/ROS_packages/wavelab_gps/include/wavelab_gps/gps_handle.h
+END

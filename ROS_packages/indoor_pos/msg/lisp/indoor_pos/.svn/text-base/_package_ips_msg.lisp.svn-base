@@ -1,6 +1,0 @@
-(in-package indoor_pos-msg)
-(export '(HEADER-VAL
-          X-VAL
-          Y-VAL
-          YAW-VAL
-))

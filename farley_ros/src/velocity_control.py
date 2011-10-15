@@ -2,7 +2,7 @@
 #
 # Implements a good PI controller for the robot.
 
-import roslib; roslib.load_manifest('clearpath_horizon')
+import roslib; roslib.load_manifest('farley_ros')
 import rospy
 from geometry_msgs.msg import Twist
 

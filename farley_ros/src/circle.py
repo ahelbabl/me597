@@ -2,7 +2,7 @@
 # Simple test node which gives the robot commands which result in it 
 # driving in a circle.
 
-import roslib; roslib.load_manifest('clearpath_horizon')
+import roslib; roslib.load_manifest('farley_ros')
 import rospy
 
 from geometry_msgs.msg import Twist

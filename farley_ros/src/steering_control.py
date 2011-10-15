@@ -1,81 +1,58 @@
-#!/usr/bin/python
+#!/usr/bin/bash
 #
-# Implements a good PI controller for the robot.
+# Implements a nonlinear steering controller, extending VelocityController for 
+# speed control functionality.
 
-import roslib; roslib.load_manifest('clearpath_horizon')
+import roslib
+roslib.load_manifest('farley_ros')
 import rospy
+from indoor_pos.msg import ips_msg
 from geometry_msgs.msg import Twist
 
 from velocity_control import VelocityControl
+import math
 
-import numpy as np
+class SteeringControl(VelocityControl):
+  def __init__(self, maxDelta=0.1, ts=0.05):
+    VelocityControl.__init__(self, ts=ts)
+    rospy.Subscriber('indoor_pos', ips_msg, self._poseCb)
+    self.maxDelta = maxDelta
 
-class SteeringControl:
-  def __init__(self, px,py velocity=0.2):
-    self.cmdPub = rospy.Publisher('/clearpath/robots/default/cmd_steer', Twist)
-    self.ts = ts
+    # Next waypoint
+    self.xRef = 0.0
+    self.yRef = 0.0
 
-    #apply speed controller
-    self.v = VelocityControl()
-    self.v.setVelocity(velocity)
-    self.velocity = velocity
-    
-    # set start position (remove this once we get position data
-    self.px = px;
-    self.py = py;
+    # Steering reference and control signals: 
+    self.steerCtrl = 0.0  # [-100,100]
 
-    # Reference and control signals:
-    # Record data in np arrays for plotting 
-#    self.velRecord = np.array([0])
-
-  def setVelocity(self, ref):
-    """ Set the velocity reference """
-    self.v.setVelocity = ref
-
-  def start(self):
-    self.running = True
-    self.v.start()
-
-  def stop(self):
-    self.running = False
-    self.v.stop()
-
-#need to understand how this works
+  def setWaypoint(self, x, y):
+    """ Set the target waypoint """
+    self.xRef = x
+    self.yRef = y
+   
   def _publish(self):
-    """ Publishes the current control signal """
+    """ Publishes the current control signals """
     if not self.running:
         return
     velCmd = Twist()
-    velCmd.angular.z = self.delta
+    velCmd.linear.x = self.velCtrl
+    velCmd.angular.z = self.steerCtrl
     self.cmdPub.publish(velCmd)
 
-  def _saturate(self, val, limit):
-    """ Returns val, saturated into [-limit,+limit] """
-    if val > limit:
-       return limit
-    if val < -limit:
-       return -limit
-    return val
+  def _poseCb(self, pose):
+    """ Update steering command using current pose """
+    # Position error
+    dx = self.xRef - pose.X
+    dy = self.yRef - pose.Y
 
-  def _velocityCb(self, vel, time):
-    """ Accepts new measurement data, and adjusts the control signal """
-    if not self.running:
-        return
+    # Heading to waypoint
+    hRef = math.atan2(dy, dx)
+    # Heading error
+    dh = hRef - pose.Yaw
+    
+    # Ctrl signal is just to set steering angle to heading error.
+    # Map radians -> steering power
+    self.steerCtrl = self._saturate(dh, self.maxDelta)
 
-    self.velRecord = np.concatenate((self.velRecord, np.array([vel])))
-
-    # Calculate the control signal:
-    err = self.velRef - vel
-    p = self.kp * err
-
-    self.integrator += self.ki * 0.5 * self.ts * (self.lastErr + err)
-    self.integrator = self._saturate(self.integrator, 100)
-
-    self.velCtrl = self._saturate(p + self.integrator, 100)
-
-    print("v: {0}, e: {4}, p: {1}, i: {2}, u: {3}".format(
-        vel, p, self.integrator, self.velCtrl, err))
-
-    self.lastErr = err
     self._publish()
     return

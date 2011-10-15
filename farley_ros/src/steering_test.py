@@ -7,6 +7,8 @@ import rospy
 
 from steering_control import SteeringControl
 
+rospy.init_node('steering_test')
+
 c = SteeringControl()
 
 rospy.spin()

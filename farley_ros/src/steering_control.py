@@ -41,18 +41,8 @@ class SteeringControl(VelocityControl):
 
   def _poseCb(self, pose):
     """ Update steering command using current pose """
-    # Position error
-    dx = self.xRef - pose.X
-    dy = self.yRef - pose.Y
+    print("Pose: x: {0}, y: {1}, h: {2}".format(pose.X, pose.Y, pose.Yaw))
 
-    # Heading to waypoint
-    hRef = math.atan2(dy, dx)
-    # Heading error
-    dh = hRef - pose.Yaw
-    
-    # Ctrl signal is just to set steering angle to heading error.
-    # Map radians -> steering power
-    self.steerCtrl = self._saturate(dh, self.maxDelta)
-
-    self._publish()
+    # Don't publish - we'll leave that to the velocity control
+    # (Don't want to try to update too frequently)
     return

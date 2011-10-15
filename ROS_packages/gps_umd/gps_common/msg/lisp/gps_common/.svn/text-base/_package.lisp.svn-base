@@ -1,0 +1,8 @@
+(defpackage gps_common-msg
+  (:use cl
+        roslisp-msg-protocol)
+  (:export
+   "<GPSFIX>"
+   "<GPSSTATUS>"
+  ))
+

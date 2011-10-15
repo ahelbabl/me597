@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/gps_umd/gpsd_client/src
+END
+client.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/gps_umd/gpsd_client/src/client.cpp
+END
+gps_dumper.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/wavelab/!svn/ver/407/projects/me595/ROS_packages/gps_umd/gpsd_client/src/gps_dumper.cpp
+END

@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/wavelab/!svn/ver/1357/projects/me595/ROS_packages/art_gazebo_plugins/urdf
+END
+ackermann_laser.xacro
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/wavelab/!svn/ver/1357/projects/me595/ROS_packages/art_gazebo_plugins/urdf/ackermann_laser.xacro
+END
+ackermann.urdf.xacro
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/wavelab/!svn/ver/1357/projects/me595/ROS_packages/art_gazebo_plugins/urdf/ackermann.urdf.xacro
+END

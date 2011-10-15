@@ -72,9 +72,6 @@ class VelocityControl:
 
     self.velCtrl = self._saturate(p + self.integrator, 100)
 
-    print("v: {0}, e: {4}, p: {1}, i: {2}, u: {3}".format(
-        vel, p, self.integrator, self.velCtrl, err))
-
     self.lastErr = err
     self._publish()
     return

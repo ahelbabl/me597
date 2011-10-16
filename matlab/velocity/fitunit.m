@@ -93,6 +93,7 @@ coeffs = lsqnonlin(@diff_exp_approach, [0.35, 1.0], [], [], lsqopts, x, y);
 clf
 hold on
 for i = 1:steps
+	plot(split(i,:,TIME), split(i,:,OUT),'g');
 	plot(split(i,:,TIME), split(i,:,OUT),'b*');
 end
 plot([0:0.02:2], coeffs(1)*(1-exp(-coeffs(2)*[0:0.02:2])), 'r');

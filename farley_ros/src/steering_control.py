@@ -17,6 +17,7 @@ class SteeringControl(VelocityControl):
     VelocityControl.__init__(self, ts=ts)
     rospy.Subscriber('indoor_pos', ips_msg, self._poseCb)
     self.speed = 0.20
+    self.curPose = None
 
     # Proportional control constant for steering angle.
     self.kSteer = kSteer
@@ -72,6 +73,7 @@ class SteeringControl(VelocityControl):
       print("Bad pose!")
       return
     self.setVelocity(self.speed)
+    self.curPose = pose
    
     # Calculate heading error
     ang = (pose.Yaw * math.pi / 180)

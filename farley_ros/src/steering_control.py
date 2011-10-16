@@ -75,7 +75,7 @@ class SteeringControl(VelocityControl):
     print("Pose: x: {0}, y: {1}, h: {2}".format(pose.X, pose.Y, pose.Yaw))
    
     # Calculate heading error
-    ang = pose.Yaw * math.pi / 180
+    ang = -(pose.Yaw * math.pi / 180)
     eHead = self.hRef - ang
     
     # Calculate crosstrack error.  Derived by wizards.

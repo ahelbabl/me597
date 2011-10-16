@@ -11,6 +11,8 @@ from geometry_msgs.msg import Twist
 
 from velocity_control import VelocityControl
 import math
+import numpy as np
+import os
 
 class SteeringControl(VelocityControl):
   def __init__(self, kSteer=0.5, ts=0.05, speed=0.20):
@@ -29,6 +31,13 @@ class SteeringControl(VelocityControl):
 
     # Steering reference and control signals: 
     self.steerCtrl = 0.0  # [-100,100]
+
+    # Record pose data for inspectimification
+    self.xRecord = np.array([0])
+    self.yRecord = np.array([0])
+
+    # Record data in a file
+    self.outfile = open(os.environ['HOME']+'/steering.dat', 'w')
 
   def setSteeringAngle(self, ang):
     """ Set the steering angle to ang (radian) """
@@ -64,6 +73,9 @@ class SteeringControl(VelocityControl):
 
   def _poseCb(self, pose):
     """ Update steering command using current pose """
+    if not self.running:
+        return
+
     if (pose.X == 0) and (pose.Y == 0) and (pose.Yaw == 0):
       self._halt()
       print("Bad pose!")
@@ -74,6 +86,10 @@ class SteeringControl(VelocityControl):
       return
     self.setVelocity(self.speed)
     self.curPose = pose
+    self.xRecord = np.concatenate((self.xRecord, np.array([pose.X])))
+    self.yRecord = np.concatenate((self.yRecord, np.array([pose.Y])))
+    self.outfile.write('{0} {1} {2} {3}\n'.format(
+          pose.header.stamp.to_sec(), pose.X, pose.Y, pose.Yaw))
    
     # Calculate heading error
     ang = (pose.Yaw * math.pi / 180)
@@ -92,7 +108,7 @@ class SteeringControl(VelocityControl):
     # Desired steering angle: 
     delta = eHead + math.atan2(self.kSteer * eCrosstrack, self.velRef)
 
-    print("Pose: x: {0}, y: {1}, h: {2}".format(pose.X, pose.Y, pose.Yaw)) 
+    #print("Pose: x: {0}, y: {1}, h: {2}, eh: {3}".format(pose.X, pose.Y, pose.Yaw,eHead)) 
     self.setSteeringAngle(self._wrapAngle(delta))
 
     # Don't publish - we'll leave that to the velocity control

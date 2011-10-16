@@ -89,16 +89,7 @@ lsqopts = optimset('MaxFunEvals', 1000);
 % Fit an exponential approach to our data
 coeffs = lsqnonlin(@diff_exp_approach, [0.35, 1.0], [], [], lsqopts, x, y);
 
-% Plot measured data points and the fit function.
-clf
-hold on
-for i = 1:steps
-	plot(split(i,:,TIME), split(i,:,OUT),'g');
-	plot(split(i,:,TIME), split(i,:,OUT),'b*');
-end
-plot([0:0.02:2], coeffs(1)*(1-exp(-coeffs(2)*[0:0.02:2])), 'r');
-hold off
-
+% Name the coefficients
 Km = coeffs(1)
 am = coeffs(2)
 
@@ -107,4 +98,19 @@ sysc = tf([Km*am], [1 am]);
 zn = (Km*am*ts)/(am*ts + 2)*[1 1];
 zd = cat(2, [1 (am*ts-2)/(am*ts+2)], zeros(1, delay));
 sysd = tf(zn, zd, ts);
+
+% Plot measured data points and the fit function.
+figure(1);
+clf();
+hold on
+for i = 1:steps
+	plot(split(i,:,TIME), split(i,:,OUT),'g');
+	plot(split(i,:,TIME), split(i,:,OUT),'b*');
+end
+plot([0:0.02:2], coeffs(1)*(1-exp(-coeffs(2)*[0:0.02:2])), 'r');
+hold off
+
+% Plot root locus of the discrete model
+figure(2);
+rlocus(sysd);
 

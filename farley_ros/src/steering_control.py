@@ -13,11 +13,13 @@ from velocity_control import VelocityControl
 import math
 
 class SteeringControl(VelocityControl):
-  def __init__(self, maxDelta=0.1, ts=0.05, speed=0.20):
+  def __init__(self, kSteer=0.5, ts=0.05, speed=0.20):
     VelocityControl.__init__(self, ts=ts)
     rospy.Subscriber('indoor_pos', ips_msg, self._poseCb)
-    self.maxDelta = maxDelta
     self.speed = 0.20
+
+    # Proportional control constant for steering angle.
+    self.kSteer = kSteer
 
     # Next waypoint
     self.xRef = 0.0
@@ -72,16 +74,13 @@ class SteeringControl(VelocityControl):
     self.setVelocity(self.speed)
     print("Pose: x: {0}, y: {1}, h: {2}".format(pose.X, pose.Y, pose.Yaw))
    
-    # Crosstrack err gain 
-    gain=2.5
-
     # Calculate heading error
-    ang = pose.Yaw * math.pi / 180
-    eHead = self.hRef - ang # calculate this
+    ang = -(pose.Yaw * math.pi / 180)
+    eHead = self.hRef - ang
     
     # Calculate crosstrack error.  Derived by wizards.
-    ex = pose.X * (1 - math.cos(ang)*math.cos(ang))
-    ey = pose.Y * (1 - math.sin(ang)*math.sin(ang))
+    ex = (self.xRef - pose.X) * (1 - math.cos(ang)*math.cos(ang))
+    ey = (self.yref - pose.Y) * (1 - math.sin(ang)*math.sin(ang))
     eCrosstrack = math.sqrt(ex*ex + ey*ey)
     # The sign of the z component of cross(target heading, crosstrack direction)
     # give the sign of the steering angle required to correct crosstrack.
@@ -90,7 +89,7 @@ class SteeringControl(VelocityControl):
     eCrosstrack = sign * eCrosstrack
 
     # Desired steering angle: 
-    delta = eHead + math.atan2(gain * eCrosstrack, self.velRef)
+    delta = eHead + math.atan2(self.kSteer * eCrosstrack, self.velRef)
     self.setSteeringAngle(self._wrapAngle(delta))
 
     # Don't publish - we'll leave that to the velocity control

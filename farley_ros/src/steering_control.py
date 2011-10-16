@@ -85,7 +85,7 @@ class SteeringControl(VelocityControl):
     eCrosstrack = math.sqrt(ex*ex + ey*ey)
     # The sign of the z component of cross(target heading, crosstrack direction)
     # give the sign of the steering angle required to correct crosstrack.
-    sign = cos(self.hRef)*ey - sin(self.hRef)*ex
+    sign = math.cos(self.hRef)*ey - math.sin(self.hRef)*ex
     sign = sign / abs(sign)
     eCrosstrack = sign * eCrosstrack
 

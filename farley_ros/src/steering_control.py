@@ -83,6 +83,11 @@ class SteeringControl(VelocityControl):
     ex = pose.X * (1 - math.cos(ang)*math.cos(ang))
     ey = pose.Y * (1 - math.sin(ang)*math.sin(ang))
     eCrosstrack = math.sqrt(ex*ex + ey*ey)
+    # The sign of the z component of cross(target heading, crosstrack direction)
+    # give the sign of the steering angle required to correct crosstrack.
+    sign = cos(self.hRef)*ey - sin(self.hRef)*ex
+    sign = sign / abs(sign)
+    eCrosstrack = sign * eCrosstrack
 
     # Desired steering angle: 
     delta = eHead + math.atan2(gain * eCrosstrack, self.velRef)

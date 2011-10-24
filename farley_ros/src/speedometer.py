@@ -6,6 +6,7 @@
 import roslib; roslib.load_manifest('farley_ros')
 import rospy
 from clearpath_horizon.msg import RawEncoders
+import os
 
 class Speedometer:
   def __init__(self, speedCb):
@@ -20,6 +21,9 @@ class Speedometer:
     
     self.filt = [1.0/3, 1.0/3, 1.0/3]
     self.buf = [0, 0, 0]
+
+    # Record data to file for analysis
+    self.outfile = open(os.environ['HOME']+'/vel_ctrl.dat', 'w')
   
   def _encodersCb(self, encoders):
     if len(encoders.ticks) != 1:
@@ -46,6 +50,8 @@ class Speedometer:
     filtered = 0.0
     for i in range(len(self.buf)):
       filtered += self.filt[i] * self.buf[i]
+
+    self.outfile.write("{0} {1} {2}\n".format(dt, vel, filtered))
 
     self.speedCb(filtered, curTime)
     self.lastTime = curTime

@@ -1,7 +1,7 @@
 % Simulates robot motion, producing ground truth against which
 % the extended kalman filter may be tested against.
 
-% Simulation parameters:
+% =========== Simulation Parameters =============
 time = 10;   % simulation length [s]
 ts = 0.05;  % sim timestep [s]
 len = 0.265; % robot length [m]
@@ -11,11 +11,16 @@ Q = diag([0.01 0.01 0.001 0.001].^2);
 % Measurement covariance:
 R = diag([0.05 0.1 0.1 0.1].^2);
 
+% Input signal.  Inputs are [motor %, steering angle (rad)]
+u = [ones(1,n)*100; ones(1,n)*0.3];
+u(:,1:to) = zeros(2,to);
+
+% =========== Simulation ========================
+
 % Sample count.  Because the discrete velocity model needs to look back
 % 5 samples, we add 5 samples and set t=0 at sample 5
 n = time / ts + 5;  
 to = 5;
-
 t = [(-to+1)*ts:ts:time];
 
 % System state.  States are [velocity, heading, x pos, y pos]
@@ -23,10 +28,6 @@ xi = zeros(4,n);  % ideal state
 % Initial state:  
 xi(:,to) = [0 0 0 0];
 x = xi;  % true state, with process noise
-
-% Input signal.  Inputs are [motor %, steering angle (rad)]
-u = [ones(1,n)*100; ones(1,n)*0.3];
-u(:,1:to) = zeros(2,to);
 
 % Measurements.  Direct, in same order as state vector.
 m = zeros(4,n);
@@ -129,7 +130,7 @@ figure(2);
 clf();
 
 %Velocity
-subplot(3,1,1);
+subplot(1,3,1);
 hold on
 plot(t,m(1,:),'g');
 plot(t,xe(1,:)+sqrt(reshape(Pe(1,1,:),size(t))));
@@ -137,7 +138,7 @@ plot(t,xe(1,:)-sqrt(reshape(Pe(1,1,:),size(t))));
 plot(t,x(1,:),'r');
 hold off
 
-subplot(3,1,2);
+subplot(1,3,2);
 hold on
 plot(t,m(2,:),'g');
 plot(t,xe(2,:)+sqrt(reshape(Pe(2,2,:),size(t))));
@@ -145,7 +146,7 @@ plot(t,xe(2,:)-sqrt(reshape(Pe(2,2,:),size(t))));
 plot(t,x(2,:),'r');
 hold off
 
-subplot(3,1,3);
+subplot(1,3,3);
 hold on
 plot(t,m(3,:),'g');
 plot(t,m(4,:),'k');

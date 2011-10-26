@@ -7,9 +7,9 @@ ts = 0.05;  % sim timestep [s]
 len = 0.265; % robot length [m]
 
 % Process covariance.  (assume independence):
-Q = diag([0.01 0.01 0.001 0.001].^2);
+Q = diag([0.005 0.02 0.005 0.005].^2);
 % Measurement covariance:
-R = diag([0.05 0.1 0.1 0.1].^2);
+R = diag([0.03 0.5 0.5 0.5].^2);
 
 % Input signal.  Inputs are [motor %, steering angle (rad)]
 u = [ones(1,n)*100; ones(1,n)*0.3];
@@ -130,31 +130,38 @@ figure(2);
 clf();
 
 %Velocity
-subplot(1,3,1);
+subplot(2,2,1);
 hold on
-plot(t,m(1,:),'g');
+title('Velocity (m/s)');
+plot(t,m(1,:),'g*');
 plot(t,xe(1,:)+sqrt(reshape(Pe(1,1,:),size(t))));
 plot(t,xe(1,:)-sqrt(reshape(Pe(1,1,:),size(t))));
 plot(t,x(1,:),'r');
 hold off
 
-subplot(1,3,2);
+subplot(2,2,2);
 hold on
-plot(t,m(2,:),'g');
+title('Heading (radian)');
+plot(t,m(2,:),'g*');
 plot(t,xe(2,:)+sqrt(reshape(Pe(2,2,:),size(t))));
 plot(t,xe(2,:)-sqrt(reshape(Pe(2,2,:),size(t))));
 plot(t,x(2,:),'r');
 hold off
 
-subplot(1,3,3);
+subplot(2,2,3);
 hold on
-plot(t,m(3,:),'g');
-plot(t,m(4,:),'k');
+title('X Position (m)');
+plot(t,m(3,:),'g*');
 plot(t,xe(3,:)+sqrt(reshape(Pe(3,3,:),size(t))));
 plot(t,xe(3,:)-sqrt(reshape(Pe(3,3,:),size(t))));
-plot(t,xe(4,:)+sqrt(reshape(Pe(4,4,:),size(t))),'c');
-plot(t,xe(4,:)-sqrt(reshape(Pe(4,4,:),size(t))),'c');
 plot(t,x(3,:),'r');
-plot(t,x(4,:),'y');
 hold off
 
+subplot(2,2,4);
+hold on
+title('Y Position (m)');
+plot(t,m(4,:),'g*');
+plot(t,xe(4,:)+sqrt(reshape(Pe(4,4,:),size(t))),'b');
+plot(t,xe(4,:)-sqrt(reshape(Pe(4,4,:),size(t))),'b');
+plot(t,x(4,:),'r');
+hold off

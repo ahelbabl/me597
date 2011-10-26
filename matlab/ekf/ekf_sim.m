@@ -10,6 +10,7 @@ ts = 0.05;  % sim timestep [s]
 len = 0.265; % robot length [m]
 
 % Process covariance.  (assume independence):
+% States and measurements are [velocity, heading, x pos, y pos]
 Q = diag([0.005 0.02 0.005 0.005].^2);
 % Measurement covariance:
 R = diag([0.03 0.5 0.5 0.5].^2);
@@ -26,7 +27,7 @@ n = time / ts + 5;
 to = 5;
 t = [(-to+1)*ts:ts:time];
 
-% System state.  States are [velocity, heading, x pos, y pos]
+% System state.
 xi = zeros(4,n);  % ideal state
 % Initial state:  
 xi(:,to) = [0 0 0 0];
@@ -37,11 +38,12 @@ m = zeros(4,n);
 
 % Kalman estimates:
 xe = xi;  % Estimate means, start with correct i.c.
-Pe = zeros(4,4,n);
+Pe = zeros(4,4,n); % Estimate covariances
 Pe(:,:,to) = Q;  % Initial condition covariance
 
 % Velocity model:
 load('vel_coeffs.mat');
+% Z transform numerator and denominator coefficients:
 zn = (Km*am*ts)/(am*ts + 2)*[1 1];
 zd = cat(2, [1 (am*ts-2)/(am*ts+2)], zeros(1, delay));
 
@@ -62,7 +64,7 @@ for k = to+1:n
     x(2,k) = x(2,k-1) + x(1,k-1)*sin(u(2,k-1))*ts/len;
     x(3,k) = x(3,k-1) + x(1,k-1)*cos(x(2,k-1))*ts;
     x(4,k) = x(4,k-1) + x(1,k-1)*sin(x(2,k-1))*ts;
-    x(:,k) = x(:,k) + sqrt(Q)*randn(4,1); 
+    x(:,k) = x(:,k) + sqrt(Q)*randn(4,1);  % Only valid if noise is independent!
 
     % Measurements:
     m(:,k) = x(:,k) + sqrt(R)*randn(4,1);
@@ -132,7 +134,7 @@ hold off
 figure(2);
 clf();
 
-%Velocity
+% Velocity
 subplot(2,2,1);
 hold on
 title('Velocity (m/s)');
@@ -142,6 +144,7 @@ plot(t,xe(1,:)-sqrt(reshape(Pe(1,1,:),size(t))));
 plot(t,x(1,:),'r');
 hold off
 
+% Heading
 subplot(2,2,2);
 hold on
 title('Heading (radian)');
@@ -151,6 +154,7 @@ plot(t,xe(2,:)-sqrt(reshape(Pe(2,2,:),size(t))));
 plot(t,x(2,:),'r');
 hold off
 
+% X Position
 subplot(2,2,3);
 hold on
 title('X Position (m)');
@@ -160,6 +164,7 @@ plot(t,xe(3,:)-sqrt(reshape(Pe(3,3,:),size(t))));
 plot(t,x(3,:),'r');
 hold off
 
+% Y Position
 subplot(2,2,4);
 hold on
 title('Y Position (m)');

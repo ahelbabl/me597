@@ -1,5 +1,8 @@
 % Simulates robot motion, producing ground truth against which
 % the extended kalman filter may be tested against.
+%
+% See http://www.cs.unc.edu/~welch/media/pdf/kalman_intro.pdf
+% for background on the EKF.
 
 % =========== Simulation Parameters =============
 time = 10;   % simulation length [s]

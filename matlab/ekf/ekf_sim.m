@@ -75,8 +75,8 @@ for k = to+1:n
     xp(4) = xe(4,k-1) + xe(1,k-1)*sin(xe(2,k-1))*ts;
 
     % Jacobian of current state w.r.t previous state:
-    A = [-zd(2)            0                            0 0;
-         ts*sin(u(2,k-1))  1                            0 0;
+    A = [-zd(2)                0                        0 0;
+         ts*sin(u(2,k-1))/len  1                        0 0;
          ts*cos(xe(2,k-1)) -xe(1,k-1)*ts*sin(xe(2,k-1)) 1 0;
          ts*sin(xe(2,k-1)) xe(1,k-1)*ts*cos(xe(2,k-1))  0 1; ];
 

@@ -1,0 +1,108 @@
+\documentclass[11pt]{article} % use larger type; default would be 10pt
+
+\usepackage{graphicx}
+\usepackage[parfill]{parskip}
+
+\title{ME 597 Lab 2 Report}
+\author{Iain Peet \and Andrei Danaila \and Matthew Uehara \and Abdel Hamid \and Ahmed Salam}
+
+\begin{document}
+\maketitle
+
+\clearpage
+
+\section{Extended Kalman Filter Design}
+
+\subsection{Motion Model}
+The robot motion model has the following state:
+\begin{equation}
+\left[ \begin{array}{c}
+v_f \\
+\psi \\
+x \\
+y
+\end{array} \right] 
+\end{equation}
+Where $v_f$ is forward velocity, $\psi$ is heading, and $x$ and $y$ are position in the horizontal plane.  The inputs to the system are:
+\begin{equation}
+\left[ \begin{array}{c}
+V_m \\
+\delta
+\end{array} \right]
+\end{equation}
+Where $V_m$ is motor power, and $\delta$ is steering angle.
+
+Due to the presence of a delay, velocity is most conveniently modelled in discrete-time, and has the following transfer function:
+\begin{equation}
+G_v(z) =  (\frac{K T \alpha}{\alpha T + 2}) (\frac{z + 1}{z + \frac{\alpha T - 2}{\alpha T + 2}}) (\frac{1}{z^4})
+\label{vf}
+\end{equation}
+Where $K$ and $\alpha$ are constants which may be found experimentally, and $T$ is the sampling period of 50 ms.
+
+The following differential equations define $\phi$, $x$, and $y$:
+\begin{equation}
+\dot{\psi} = \frac{v_f}{L} sin(\delta)
+\end{equation}
+Where $L$ is wheelbase length,
+\begin{equation}
+\dot{x} = v_f cos( \psi )
+\end{equation}
+and
+\begin{equation}
+\dot{y} = v_f sin( \psi )
+\label{y}
+\end{equation}
+
+\subsection{Measurement Model}
+
+A simple measurement model where all states are directly measured is used.  Encoder readings are differentiated to yield direct forward velocity measurements, and the local position system yields direct measurements of heading and planar position.  This measurement can also be reasonably used with GPS by estimating heading from successive position measurements, so long as the distance travelled between measurements is large relative to position measurement error.
+
+The measurement model is defined as follows:
+\begin{equation}
+y_k = \left[ \begin{array}{c} v_f \\ \psi \\ x \\ y \end{array} \right]_k
+\end{equation}
+
+\subsection{Prediction}
+
+The a priori state expectation is computed from the motion model by
+\begin{equation}
+\bar{x}_k = f(\hat{x}_{k-1}, u_{k-1})
+\end{equation}
+Where $f$ may be trivially derived from equations \ref{vf} - \ref{y}.  Note that, technically, equation \ref{vf} violates the Markov assumption.  This could be corrected by incorporating a few input delay buffer cells in the sytem state.  This has no practical impact on filter behaviour, so it is ignored for the sake of simplicity.
+
+The a priori covariance is computed by linearizing about the current state:
+\begin{equation}
+\bar{P}_k = A_kP_{k-1}A_k^T + W_kQ_{k-1}W_k^T
+\end{equation}
+Where $A_k$ is the Jacobian, $\frac{\delta f}{\delta x} | _{\hat{x}_{k-1}, u_{k-1}}$:
+\renewcommand{\arraystretch}{1.4}
+\begin{equation}
+\left[ \begin{array}{cccc}
+-\frac{\alpha T - 2}{\alpha T + 2} & 0 & 0 & 0 \\
+\frac{T}{L} sin( \delta _{k-1} ) & 1 & 0 & 0 \\
+T cos(\psi _{k-1}) & - v_{f,k-1} T sin( \psi _{k-1}) & 1 & 0 \\
+T sin(\psi _{k-1}) & v_{f,k-1} T cos ( \psi _{k-1}) & 0 & 1 \\
+\end{array} \right]
+\end{equation}
+\renewcommand{\arraystretch}{1}
+And $W_k$ is the Jacobian of $x_k$ with respect to process noise, which is simply $I$ in our motion model.
+
+\subsection{Correction}
+
+The a priori state estimate is corrected by sensor measurements.  First, the Kalman gain is computed:
+\begin{equation}
+K_k = \bar{P}_k H_k^T ( H_k \bar{P}_k H_k^T + V_k R_k V_k^T ) ^{-1}
+\end{equation}
+Where $H_k$ is the Jacobian of $y_k$ with respect to $x_k$, and $V_k$ is the Jacobian of $y_k$ with respect to measurement noise.   For our measurement model, $H_k$ and $V_k$ are both $I$.
+
+The a posteriori state expectation and covariance can then be computed:
+\begin{equation}
+\hat{x}_k = \bar{x}_k + K_k (y_k - \bar{x}_k)
+\end{equation}
+and
+\begin{equation}
+P_k = (I - K_k H_k) \bar{P}_k
+\end{equation}
+
+
+\end{document}

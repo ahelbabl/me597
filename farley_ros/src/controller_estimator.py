@@ -17,34 +17,34 @@ from indoor_pos.msg import ips_msg
 from speedometer import Speedometer
 
 class ControllerEstimator:
-  def __init__(self, kp=143.9, ki=857.8, ts=0.05, kSteer=0.5, ts=0.05, speed=0.20):
+  def __init__(self):
     self.cmdPub = rospy.Publisher('/clearpath/robots/default/cmd_vel', Twist)
     self.spd = Speedometer(self._velocityCb)
     rospy.Subscriber('indoor_pos', ips_msg, self._poseCb)
 
     self.running = False
-    self.ts = ts
+    self.ts = 0.05 # Sample time [s]
 
     # Proportional control constants
-    self.kp = kp;
-    self.ki = ki; 
-    self.integrator = 0.0;
-    self.lastErr = 0.0;  # (needed for trapezoidal integrator)
+    self.kp = 143.9
+    self.ki = 857.8 
+    self.integrator = 0.0
+    self.lastErr = 0.0  # (needed for trapezoidal integrator)
 
     # Reference and control signals:
-    self.velRef = 0.0  # [m/s]
-    self.velCtrl = 0.0 # [-100,100]
+    self.velRef = None  # [m/s]
+    self.velCtrl = None # [-100,100]
 
     # Proportional control constant for steering angle.
-    self.kSteer = kSteer
+    self.kSteer = 0.5
 
     # Next waypoint
-    self.xRef = 0.0
-    self.yRef = 0.0
-    self.hRef = 0.0
+    self.xRef = None
+    self.yRef = None
+    self.hRef = None
 
     # Steering reference and control signals: 
-    self.steerCtrl = 0.0  # [-100,100]
+    self.steerCtrl = None # [-100,100]
 
     # Record pose data for inspectimification
     self.velRecord = np.array([0])
@@ -53,18 +53,27 @@ class ControllerEstimator:
 
   def setVelocity(self, ref):
     """ Set the velocity reference """
-    self.velRef = ref
+    if ref is None:
+      self.velRef = self.velCtrl = None
+    else:
+      self.velRef = ref
 
   def setSteeringAngle(self, ang):
     """ Set the steering angle to ang (radian) """
-    out = 266.7 * ang - 7.0;
-    self.steerCtrl = self._saturate(out, 100)
+    if ang is None:
+      self.steerCtrl = None
+    else:
+      out = 266.7 * ang - 7.0;
+      self.steerCtrl = self._saturate(out, 100)
    
   def setWaypoint(self, x, y, head):
     """ Set the target waypoint """
-    self.xRef = x
-    self.yRef = y
-    self.hRef = head
+    if (x is None) or (y is None) or (head is None):
+      self.xRef = self.yRef = self.hRef = None
+    else:
+      self.xRef = x
+      self.yRef = y
+      self.hRef = head
 
   def start(self):
     self.running = True
@@ -75,10 +84,12 @@ class ControllerEstimator:
   def _publish(self):
     """ Publishes the current control signals """
     if not self.running:
-        return
+      return
     velCmd = Twist()
-    velCmd.linear.x = self.velCtrl
-    velCmd.angular.z = self.steerCtrl
+    if not self.velCtrl is None:
+      velCmd.linear.x = self.velCtrl
+    if not self.steerCtrl is None:
+      velCmd.angular.z = self.steerCtrl
     self.cmdPub.publish(velCmd)
 
   def _saturate(self, val, limit):
@@ -92,7 +103,9 @@ class ControllerEstimator:
   def _velocityCb(self, vel, time):
     """ Accepts new measurement data, and adjusts the control signal """
     if not self.running:
-        return
+      return
+    if self.velRef is None:
+      return
 
     self.velRecord = np.concatenate((self.velRecord, np.array([vel])))
 
@@ -124,12 +137,12 @@ class ControllerEstimator:
   def _poseCb(self, pose):
     """ Update steering command using current pose """
     if not self.running:
-        return
+      return
+    if (self.xRef is None) or (self.yRef is None) or (self.hRef is None):
+      return
 
     self.xRecord = np.concatenate((self.xRecord, np.array([pose.X])))
     self.yRecord = np.concatenate((self.yRecord, np.array([pose.Y])))
-    self.outfile.write('{0} {1} {2} {3}\n'.format(
-          pose.header.stamp.to_sec(), pose.X, pose.Y, pose.Yaw))
    
     # Calculate heading error
     ang = (pose.Yaw * math.pi / 180)

@@ -51,7 +51,7 @@ zd = cat(2, [1 (am*ts-2)/(am*ts+2)], zeros(1, delay));
 for k = to+1:n
     % Ideal model:
     % Velocity:
-    xi(1,k) = zn(1)*u(1,k-5) + zn(2)*u(1,k-4) - zd(2)*xi(1,k-1);
+    xi(1,k) = zn(1)*u(1,k-4) + zn(2)*u(1,k-3) - zd(2)*xi(1,k-1);
     % Heading:
     xi(2,k) = xi(2,k-1) + xi(1,k-1)*sin(u(2,k-1))*ts/len;
     % x pos:
@@ -60,7 +60,7 @@ for k = to+1:n
     xi(4,k) = xi(4,k-1) + xi(1,k-1)*sin(xi(2,k-1))*ts;
 
     % Noisy model:
-    x(1,k) = zn(1)*u(1,k-5) + zn(2)*u(1,k-4) - zd(2)*x(1,k-1);
+    x(1,k) = zn(1)*u(1,k-4) + zn(2)*u(1,k-3) - zd(2)*x(1,k-1);
     x(2,k) = x(2,k-1) + x(1,k-1)*sin(u(2,k-1))*ts/len;
     x(3,k) = x(3,k-1) + x(1,k-1)*cos(x(2,k-1))*ts;
     x(4,k) = x(4,k-1) + x(1,k-1)*sin(x(2,k-1))*ts;
@@ -71,7 +71,7 @@ for k = to+1:n
 
     % A priori state estimate:
     xp = zeros(4,1);
-    xp(1) = zn(1)*u(1,k-5) + zn(2)*u(1,k-4) - zd(2)*xe(1,k-1);
+    xp(1) = zn(1)*u(1,k-4) + zn(2)*u(1,k-3) - zd(2)*xe(1,k-1);
     xp(2) = xe(2,k-1) + xe(1,k-1)*sin(u(2,k-1))*ts/len;
     xp(3) = xe(3,k-1) + xe(1,k-1)*cos(xe(2,k-1))*ts;
     xp(4) = xe(4,k-1) + xe(1,k-1)*sin(xe(2,k-1))*ts;

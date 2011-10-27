@@ -9,15 +9,11 @@ time = 10;   % simulation length [s]
 ts = 0.05;  % sim timestep [s]
 len = 0.265; % robot length [m]
 
-% Process covariance.  (assume independence):
 % States and measurements are [velocity, heading, x pos, y pos]
-Q = diag([0.005 0.02 0.005 0.005].^2);
+% Process covariance.  (assume independence):
+Q = diag([sqrt(0.0005) 0.02 0.005 0.005].^2);
 % Measurement covariance:
-R = diag([0.03 0.5 0.5 0.5].^2);
-
-% Input signal.  Inputs are [motor %, steering angle (rad)]
-u = [ones(1,n)*100; ones(1,n)*0.3];
-u(:,1:to) = zeros(2,to);
+R = diag([sqrt(0.0035) 0.5 0.5 0.5].^2);
 
 % =========== Simulation ========================
 
@@ -26,6 +22,10 @@ u(:,1:to) = zeros(2,to);
 n = time / ts + 5;  
 to = 5;
 t = [(-to+1)*ts:ts:time];
+
+% Input signal.  Inputs are [motor %, steering angle (rad)]
+u = [ones(1,n)*100; ones(1,n)*0.3];
+u(:,1:to) = zeros(2,to);
 
 % System state.
 xi = zeros(4,n);  % ideal state

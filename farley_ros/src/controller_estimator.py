@@ -1,25 +1,39 @@
-#!/usr/bin/bash
+#!/usr/bin/python
 #
-# Implements a nonlinear steering controller, extending VelocityController for 
-# speed control functionality.
+# A monolithic velocity + steering controller and EKF state estimator.
+# All of these functions are combined due to the tight relationship
+# between estimation and control, in terms both of timing and information
+# sharing.
 
-import roslib
-roslib.load_manifest('farley_ros')
-import rospy
-from indoor_pos.msg import ips_msg
-from geometry_msgs.msg import Twist
-
-from velocity_control import VelocityControl
 import math
 import numpy as np
 import os
 
-class SteeringControl(VelocityControl):
-  def __init__(self, kSteer=0.5, ts=0.05, speed=0.20):
-    VelocityControl.__init__(self, ts=ts)
+import roslib; roslib.load_manifest('farley_ros')
+import rospy
+from geometry_msgs.msg import Twist
+from indoor_pos.msg import ips_msg
+
+from speedometer import Speedometer
+
+class ControllerEstimator:
+  def __init__(self, kp=143.9, ki=857.8, ts=0.05, kSteer=0.5, ts=0.05, speed=0.20):
+    self.cmdPub = rospy.Publisher('/clearpath/robots/default/cmd_vel', Twist)
+    self.spd = Speedometer(self._velocityCb)
     rospy.Subscriber('indoor_pos', ips_msg, self._poseCb)
-    self.speed = 0.20
-    self.curPose = None
+
+    self.running = False
+    self.ts = ts
+
+    # Proportional control constants
+    self.kp = kp;
+    self.ki = ki; 
+    self.integrator = 0.0;
+    self.lastErr = 0.0;  # (needed for trapezoidal integrator)
+
+    # Reference and control signals:
+    self.velRef = 0.0  # [m/s]
+    self.velCtrl = 0.0 # [-100,100]
 
     # Proportional control constant for steering angle.
     self.kSteer = kSteer
@@ -33,11 +47,13 @@ class SteeringControl(VelocityControl):
     self.steerCtrl = 0.0  # [-100,100]
 
     # Record pose data for inspectimification
+    self.velRecord = np.array([0])
     self.xRecord = np.array([0])
     self.yRecord = np.array([0])
 
-    # Record data in a file
-    self.outfile = open(os.environ['HOME']+'/steering.dat', 'w')
+  def setVelocity(self, ref):
+    """ Set the velocity reference """
+    self.velRef = ref
 
   def setSteeringAngle(self, ang):
     """ Set the steering angle to ang (radian) """
@@ -50,6 +66,12 @@ class SteeringControl(VelocityControl):
     self.yRef = y
     self.hRef = head
 
+  def start(self):
+    self.running = True
+
+  def stop(self):
+    self.running = False
+
   def _publish(self):
     """ Publishes the current control signals """
     if not self.running:
@@ -58,6 +80,34 @@ class SteeringControl(VelocityControl):
     velCmd.linear.x = self.velCtrl
     velCmd.angular.z = self.steerCtrl
     self.cmdPub.publish(velCmd)
+
+  def _saturate(self, val, limit):
+    """ Returns val, saturated into [-limit,+limit] """
+    if val > limit:
+       return limit
+    if val < -limit:
+       return -limit
+    return val
+
+  def _velocityCb(self, vel, time):
+    """ Accepts new measurement data, and adjusts the control signal """
+    if not self.running:
+        return
+
+    self.velRecord = np.concatenate((self.velRecord, np.array([vel])))
+
+    # Calculate the control signal:
+    err = self.velRef - vel
+    p = self.kp * err
+
+    self.integrator += self.ki * 0.5 * self.ts * (self.lastErr + err)
+    self.integrator = self._saturate(self.integrator, 100)
+
+    self.velCtrl = self._saturate(p + self.integrator, 100)
+
+    self.lastErr = err
+    self._publish()
+    return
 
   def _wrapAngle(self, ang):
     """ Wrap an angle (radian) to [-pi, pi] """
@@ -76,16 +126,6 @@ class SteeringControl(VelocityControl):
     if not self.running:
         return
 
-    if (pose.X == 0) and (pose.Y == 0) and (pose.Yaw == 0):
-      self._halt()
-      print("Bad pose!")
-      return
-    if (pose.X > 10) and (pose.Y > 10) and (pose.Yaw > 500):
-      self._halt()
-      print("Bad pose!")
-      return
-    self.setVelocity(self.speed)
-    self.curPose = pose
     self.xRecord = np.concatenate((self.xRecord, np.array([pose.X])))
     self.yRecord = np.concatenate((self.yRecord, np.array([pose.Y])))
     self.outfile.write('{0} {1} {2} {3}\n'.format(
@@ -114,3 +154,4 @@ class SteeringControl(VelocityControl):
     # Don't publish - we'll leave that to the velocity control
     # (Don't want to try to update too frequently)
     return
+

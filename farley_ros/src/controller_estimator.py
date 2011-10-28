@@ -36,7 +36,7 @@ class ControllerEstimator:
 
     # Reference and control signals:
     self.velRef = None  # [m/s]
-    self.velCtrl = None # [-100,100]
+    self.velCtrl = 0.0  # [-100,100]
 
     # Steering control state:
 
@@ -49,7 +49,7 @@ class ControllerEstimator:
     self.hRef = None
 
     # Steering reference and control signals: 
-    self.steerCtrl = None # [-100,100]
+    self.steerCtrl = 0.0 # [-100,100]
 
     # Record pose data for inspectimification
     self.velRecord = np.array([0])
@@ -87,14 +87,15 @@ class ControllerEstimator:
   def setVelocity(self, ref):
     """ Set the velocity reference """
     if ref is None:
-      self.velRef = self.velCtrl = None
+      self.velRef = None
+      self.velCtrl = 0.0
     else:
       self.velRef = ref
 
   def setSteeringAngle(self, ang):
     """ Set the steering angle to ang (radian) """
     if ang is None:
-      self.steerCtrl = None
+      self.steerCtrl = 0.0
     else:
       out = 266.7 * ang - 7.0;
       self.steerCtrl = self._saturate(out, 100)
@@ -149,7 +150,7 @@ class ControllerEstimator:
   def _ekfUpdate(self):
     if (self.lastVel is None) or (self.lastPose is None):
       # Not enough info to iterate kalman
-      return
+      return False
 
     # Measurements:
     m = np.array([[self.lastVel], 
@@ -171,7 +172,7 @@ class ControllerEstimator:
     # Jacobian of current state w.r.t previous state:
     A = np.zeros((4,4))
     A[0,0] = -self.velDen
-    A[1,0] = self.ts * math.sin(self.steerctrl) / self.length
+    A[1,0] = self.ts * math.sin(self.steerCtrl) / self.length
     A[1,1] = 1
     A[2,0] = self.ts * math.cos(self.stateEst[1])
     A[2,1] = -self.ts * self.stateEst[0] * math.sin(self.steerCtrl)
@@ -190,10 +191,30 @@ class ControllerEstimator:
     self.stateEst = xp + K*(m - xp)
     self.P = (np.identity(4) - K)*Pp
 
+    self.lastVel = None
+    self.lastPose = None
+    return True
+
   def _velocityCb(self, vel, time):
-    """ Accepts new measurement data, and adjusts the control signal """
     if not self.running:
       return
+    self.lastVel = vel
+
+    if self._ekfUpdate():
+      self._velCtrl(self.stateEst[0])
+      self._steerCtrl(self.stateEst[1], self.stateEst[2], self.stateEst[3])
+    else:
+      self._velCtrl(vel)
+
+    self._publish()
+    return
+
+  def _poseCb(self, pose):
+    if not self.running:
+      return
+    self.lastPose = pose
+
+  def _velCtrl(self, vel):
     if self.velRef is None:
       return
 
@@ -205,34 +226,26 @@ class ControllerEstimator:
 
     self.integrator += self.ki * 0.5 * self.ts * (self.lastErr + err)
     self.integrator = self._saturate(self.integrator, 100)
+    self.lastErr = err
 
     self.velCtrl = self._saturate(p + self.integrator, 100)
 
-    self.lastErr = err
-    self._publish()
-    return
-
-  def _poseCb(self, pose):
-    """ Update steering command using current pose """
-    self.lastPose = pose
-
-    if not self.running:
-      return
+  def _steerCtrl(self, X, Y, Yaw):
     if (self.xRef is None) or (self.yRef is None) or (self.hRef is None):
       return
 
-    self.xRecord = np.concatenate((self.xRecord, np.array([pose.X])))
-    self.yRecord = np.concatenate((self.yRecord, np.array([pose.Y])))
+    self.xRecord = np.concatenate((self.xRecord, np.array([X])))
+    self.yRecord = np.concatenate((self.yRecord, np.array([Y])))
     self.outfile.write('{0} {1} {2} {3}\n'.format(
-          pose.header.stamp.to_sec(), pose.X, pose.Y, pose.Yaw))
+          header.stamp.to_sec(), X, Y, Yaw))
    
     # Calculate heading error
-    ang = (pose.Yaw * math.pi / 180)
+    ang = (Yaw * math.pi / 180)
     eHead = self.hRef - ang
     
     # Calculate crosstrack error.  Derived by wizards.
-    ex = (self.xRef - pose.X) * (1 - math.cos(ang)*math.cos(ang))
-    ey = (self.yRef - pose.Y) * (1 - math.sin(ang)*math.sin(ang))
+    ex = (self.xRef - X) * (1 - math.cos(ang)*math.cos(ang))
+    ey = (self.yRef - Y) * (1 - math.sin(ang)*math.sin(ang))
     eCrosstrack = math.sqrt(ex*ex + ey*ey)
     # The sign of the z component of cross(target heading, crosstrack direction)
     # give the sign of the steering angle required to correct crosstrack.
@@ -243,10 +256,7 @@ class ControllerEstimator:
     # Desired steering angle: 
     delta = eHead + math.atan2(self.kSteer * eCrosstrack, self.velRef)
 
-    #print("Pose: x: {0}, y: {1}, h: {2}, eh: {3}".format(pose.X, pose.Y, pose.Yaw,eHead)) 
+    #print("Pose: x: {0}, y: {1}, h: {2}, eh: {3}".format(X, Y, Yaw,eHead)) 
     self.setSteeringAngle(self._wrapAngle(delta))
-
-    # Don't publish - we'll leave that to the velocity control
-    # (Don't want to try to update too frequently)
     return
 

@@ -11,8 +11,10 @@ import os
 class Speedometer:
   def __init__(self, speedCb):
     """ Create a Speedometer.  Whenever encoder data is received,
-        speedCb will be called with the current speed passed as the first param
-        and the measurement time as the second parameter """
+        speedCb is called.  speedCb should have the signiature:
+        speedCb(raw, filtered, time) Where raw is the raw velocity
+        measurement, filtered is velocity after applicatoin of a 
+        simple low pass filter, and time is the time of measurement """
     self.speedCb = speedCb
     self.lastTime = None
     self.lastTicks = 0
@@ -53,7 +55,7 @@ class Speedometer:
 
     self.outfile.write("{0} {1} {2}\n".format(dt, vel, filtered))
 
-    self.speedCb(filtered, curTime)
+    self.speedCb(vel, filtered, curTime)
     self.lastTime = curTime
     self.lastTicks = curTicks
 

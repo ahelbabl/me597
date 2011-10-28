@@ -74,7 +74,7 @@ class ControllerEstimator:
 
     # Zero initial state
     self.stateEst = np.zeros((4,1))
-    self.velOutDelay = [0 0 0 0]
+    self.velOutDelay = [0, 0, 0, 0]
     # ... with low confidence
     self.P = np.ones((4,4))
 
@@ -160,13 +160,13 @@ class ControllerEstimator:
 
     # A priori state estimate:
     xp = np.zeros((4,1))
-    xp[0] = self.velNum*(self.velOutDelay[-4] + self.velOutDelay[-3]) -
+    xp[0] = self.velNum*(self.velOutDelay[-4] + self.velOutDelay[-3]) - \
         self.velDen*self.stateEst[0]
-    xp[1] = self.stateEst[1] + 
+    xp[1] = self.stateEst[1] + \
         self.stateEst[0]*math.sin(self.steerCtrl)*self.ts / self.length
-    xp[2] = self.stateEst[2] +
+    xp[2] = self.stateEst[2] + \
         self.stateEst[0]*math.cos(self.stateEst[1])*self.ts
-    xp[3] = self.stateEst[3] +
+    xp[3] = self.stateEst[3] + \
         self.stateEst[0]*math.sin(self.stateEst[1])*self.ts
 
     # Jacobian of current state w.r.t previous state:
@@ -195,7 +195,7 @@ class ControllerEstimator:
     self.lastPose = None
     return True
 
-  def _velocityCb(self, vel, time):
+  def _velocityCb(self, vel, filtered, time):
     if not self.running:
       return
     self.lastVel = vel

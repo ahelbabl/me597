@@ -13,12 +13,14 @@ import roslib; roslib.load_manifest('farley_ros')
 import rospy
 from geometry_msgs.msg import Twist
 from indoor_pos.msg import ips_msg
+from farley_ros.msg import *
 
 from speedometer import Speedometer
 
 class ControllerEstimator:
   def __init__(self):
     self.cmdPub = rospy.Publisher('/clearpath/robots/default/cmd_vel', Twist)
+    self.estPub = rospy.Publisher('state_est', StateEstimate)
     self.spd = Speedometer(self._velocityCb)
     rospy.Subscriber('indoor_pos', ips_msg, self._poseCb)
 
@@ -179,6 +181,14 @@ class ControllerEstimator:
     else:
       # No pose update, just correct vel:
       self._ekfVelCorrect(xp, Pp)
+
+    # Broadcast the estimate
+    msg = StateEstimate()
+    msg.state = [self.stateEst[i,0] for i in range(4)]
+    msg.covarRows = [CovarianceRow() for i in range(4)] 
+    for i in range(4):
+      msg.covarRows[i].cols = [self.P[i,j] for j in range(4)]
+    self.estPub.publish(msg)
 
     print(self.stateEst.transpose())
 

@@ -4,8 +4,7 @@
   </machine>
 
   <group ns="clearpath/robots/default">  
-    <node pkg="farley_ros" type="ekf_test.py" name="ekf_test" output="screen"/>
-    <node pkg="indoor_pos" type="socked_thread" name="socked_thread" output="log"/>
+    <node pkg="farley_ros" type="mapper_node.py" name="mapper" output="screen"/>
 
     <node pkg="clearpath_horizon" type="horizon.py" name="horizon" machine="robot" respawn="true" output="screen">
      <!-- Uncomment the following line to manually specify serial device, rather
@@ -38,4 +37,12 @@
       <param name="data/power_status" value="1" />
     </node>
   </group>
+
+  <node name="hokuyo" pkg="hokuyo_node" type="hokuyo_node" respawn="false" machine="robot" output="screen">
+    <!-- Starts up faster, but timestamps will be inaccurate. --> 
+    <param name="calibrate_time" type="bool" value="false"/> 
+    <!-- Set the port to connect to here -->
+    <param name="port" type="string" value="/dev/ttyACM0"/> 
+    <param name="intensity" type="bool" value="false"/>
+  </node>
 </launch>

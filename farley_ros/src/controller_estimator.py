@@ -124,7 +124,7 @@ class ControllerEstimator:
       velCmd.linear.x = self.velCtrl
     if not self.steerCtrl is None:
       velCmd.angular.z = self.steerCtrl
-    self.velOutDelay = self.velOutDelay[2:] + [self.velCtrl]
+    self.velOutDelay = self.velOutDelay[1:] + [self.velCtrl]
     self.cmdPub.publish(velCmd)
 
   def _saturate(self, val, limit):
@@ -160,8 +160,7 @@ class ControllerEstimator:
 
     # A priori state estimate:
     xp = np.zeros((4,1))
-    xp[0] = self.velNum*(self.velOutDelay[-4] + self.velOutDelay[-3]) - \
-        self.velDen*self.stateEst[0]
+    xp[0] = self.velNum*(self.velOutDelay[-4] + self.velOutDelay[-3]) - self.velDen*self.stateEst[0]
     xp[1] = self.stateEst[1] + \
         self.stateEst[0]*math.sin(self.steerCtrl)*self.ts / self.length
     xp[2] = self.stateEst[2] + \
@@ -185,7 +184,7 @@ class ControllerEstimator:
     Pp = A * self.P * A.transpose() + self.Q
 
     # Kalman Gain:
-    K = Pp * (Pp + self.R).inv()
+    K = Pp * np.linalg.inv((Pp + self.R))
 
     # State estimates:
     self.stateEst = xp + K*(m - xp)
@@ -210,6 +209,7 @@ class ControllerEstimator:
     return
 
   def _poseCb(self, pose):
+    print("Pose: x: {0}, y: {1}, h: {2}".format(pose.X, pose.Y, pose.Yaw)) 
     if not self.running:
       return
     self.lastPose = pose
@@ -256,7 +256,6 @@ class ControllerEstimator:
     # Desired steering angle: 
     delta = eHead + math.atan2(self.kSteer * eCrosstrack, self.velRef)
 
-    #print("Pose: x: {0}, y: {1}, h: {2}, eh: {3}".format(X, Y, Yaw,eHead)) 
     self.setSteeringAngle(self._wrapAngle(delta))
     return
 

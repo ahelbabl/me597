@@ -4,6 +4,7 @@
   </machine>
 
   <group ns="clearpath/robots/default">  
+    <node pkg="indoor_pos" type="socked_thread" name="lps" output="screen"/>
     <node pkg="farley_ros" type="mapper_node.py" name="mapper" output="screen"/>
     <node pkg="farley_ros" type="ekf_test.py" name="ekf_test" output="screen"/>
 

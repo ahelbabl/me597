@@ -142,4 +142,5 @@ class Mapper:
   def _stateCb(self, state):
     # state.state is [vel, heading, x pos, y pos]
     self.pose = MapPose(state.state[2], state.state[3], state.state[1])
+#    print(self.pose)
 

@@ -66,21 +66,21 @@ class ControllerEstimator:
     self.lastVel = None
 
     # Process covariance:
-    self.Q = np.array([[0.0020, 0, 0, 0],  
+    self.Q = np.matrix([[0.0020, 0, 0, 0],  
                        [0, 0.15, 0, 0],
                        [0, 0, 0.07, 0],
                        [0, 0, 0, 0.07]])
     # Measurement covariance:
-    self.R = np.array([[0.0020, 0, 0, 0],
+    self.R = np.matrix([[0.0020, 0, 0, 0],
                        [0, 0.7, 0, 0],
                        [0, 0, 0.7, 0],
                        [0, 0, 0, 0.7]])
 
     # Zero initial state
-    self.stateEst = np.zeros((4,1))
+    self.stateEst = np.matrix(np.zeros((4,1)))
     self.velOutDelay = [0, 0, 0, 0]
     # ... with low confidence
-    self.P = np.ones((4,4))
+    self.P = np.matrix(np.ones((4,4)))
 
     # Velocity model params:
     Km = 0.003267973309
@@ -151,7 +151,7 @@ class ControllerEstimator:
 
   def _ekfUpdate(self):
     # A priori state estimate:
-    xp = np.zeros((4,1))
+    xp = np.matrix(np.zeros((4,1)))
     xp[0,0] = self.velNum*(self.velOutDelay[-4] + self.velOutDelay[-3])
     xp[0,0] -= self.velDen*self.stateEst[0]
     xp[1,0] = self.stateEst[1]
@@ -162,7 +162,7 @@ class ControllerEstimator:
     xp[3,0] += self.stateEst[0]*math.sin(self.stateEst[1])*self.ts
 
     # Jacobian of current state w.r.t previous state:
-    A = np.zeros((4,4))
+    A = np.matrix(np.zeros((4,4)))
     A[0,0] = -self.velDen
     A[1,0] = self.ts * math.sin(self.steerRef) / self.length
     A[1,1] = 1
@@ -195,7 +195,7 @@ class ControllerEstimator:
   def _ekfFullCorrect(self, xp, Pp):
     """ Correct all state, using latest velocity and pose """
     # Measurements:
-    m = np.array([[self.lastVel], 
+    m = np.matrix([[self.lastVel], 
             [self.lastPose.Yaw], 
             [self.lastPose.X], 
             [self.lastPose.Y]])
@@ -236,7 +236,7 @@ class ControllerEstimator:
     return
 
   def _poseCb(self, pose):
-    print("Pose: x: {0}, y: {1}, h: {2}".format(pose.X, pose.Y, pose.Yaw)) 
+#    print("Pose: x: {0}, y: {1}, h: {2}".format(pose.X, pose.Y, pose.Yaw)) 
     if not self.running:
       return
     self.lastPose = pose

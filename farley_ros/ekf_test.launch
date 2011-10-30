@@ -4,7 +4,8 @@
   </machine>
 
   <group ns="clearpath/robots/default">  
-    <node pkg="farley_ros" type="vel_ctrl_test.py" name="vel_ctrl_test" output="screen"/>
+    <node pkg="farley_ros" type="ekf_test.py" name="ekf_test" output="screen"/>
+    <node pkg="indoor_pos" type="socked_thread" name="socked_thread" output="log"/>
 
     <node pkg="clearpath_horizon" type="horizon.py" name="horizon" machine="robot" respawn="true" output="screen">
      <!-- Uncomment the following line to manually specify serial device, rather

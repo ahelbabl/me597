@@ -13,12 +13,14 @@ import roslib; roslib.load_manifest('farley_ros')
 import rospy
 from geometry_msgs.msg import Twist
 from indoor_pos.msg import ips_msg
+from farley_ros.msg import *
 
 from speedometer import Speedometer
 
 class ControllerEstimator:
   def __init__(self):
     self.cmdPub = rospy.Publisher('/clearpath/robots/default/cmd_vel', Twist)
+    self.estPub = rospy.Publisher('state_est', StateEstimate)
     self.spd = Speedometer(self._velocityCb)
     rospy.Subscriber('indoor_pos', ips_msg, self._poseCb)
 
@@ -49,7 +51,9 @@ class ControllerEstimator:
     self.hRef = None
 
     # Steering reference and control signals: 
-    self.steerCtrl = 0.0 # [-100,100]
+    self.steerRef = None # [-0.4,0.4] [rad]
+    self.steerCtrl = None # [-100,100]
+    self.setSteeringAngle(0.0) # initialize sensibly
 
     # Record pose data for inspectimification
     self.velRecord = np.array([0])
@@ -62,12 +66,12 @@ class ControllerEstimator:
     self.lastVel = None
 
     # Process covariance:
-    self.Q = np.array([[0.0005, 0, 0, 0],  
+    self.Q = np.array([[0.0020, 0, 0, 0],  
                        [0, 0.15, 0, 0],
                        [0, 0, 0.07, 0],
                        [0, 0, 0, 0.07]])
     # Measurement covariance:
-    self.R = np.array([[0.0035, 0, 0, 0],
+    self.R = np.array([[0.0020, 0, 0, 0],
                        [0, 0.7, 0, 0],
                        [0, 0, 0.7, 0],
                        [0, 0, 0, 0.7]])
@@ -92,13 +96,11 @@ class ControllerEstimator:
     else:
       self.velRef = ref
 
-  def setSteeringAngle(self, ang):
+  def setSteeringAngle(self, ang=0.0):
     """ Set the steering angle to ang (radian) """
-    if ang is None:
-      self.steerCtrl = 0.0
-    else:
-      out = 266.7 * ang - 7.0;
-      self.steerCtrl = self._saturate(out, 100)
+    self.steerRef = ang
+    out = 266.7 * ang - 7.0;
+    self.steerCtrl = self._saturate(out, 100)
    
   def setWaypoint(self, x, y, head):
     """ Set the target waypoint """
@@ -148,40 +150,55 @@ class ControllerEstimator:
     self.setSteeringAngle(0)
 
   def _ekfUpdate(self):
-    if (self.lastVel is None) or (self.lastPose is None):
-      # Not enough info to iterate kalman
-      return False
+    # A priori state estimate:
+    xp = np.zeros((4,1))
+    xp[0,0] = self.velNum*(self.velOutDelay[-4] + self.velOutDelay[-3])
+    xp[0,0] -= self.velDen*self.stateEst[0]
+    xp[1,0] = self.stateEst[1]
+    xp[1,0] += self.stateEst[0]*math.sin(self.steerRef)*self.ts / self.length
+    xp[2,0] = self.stateEst[2]
+    xp[2,0] += self.stateEst[0]*math.cos(self.stateEst[1])*self.ts
+    xp[3,0] = self.stateEst[3]
+    xp[3,0] += self.stateEst[0]*math.sin(self.stateEst[1])*self.ts
 
+    # Jacobian of current state w.r.t previous state:
+    A = np.zeros((4,4))
+    A[0,0] = -self.velDen
+    A[1,0] = self.ts * math.sin(self.steerRef) / self.length
+    A[1,1] = 1
+    A[2,0] = self.ts * math.cos(self.stateEst[1])
+    A[2,1] = -self.ts * self.stateEst[0] * math.sin(self.stateEst[1])
+    A[2,2] = 1
+    A[3,0] = self.ts * math.sin(self.steerCtrl)
+    A[3,1] = self.ts * self.stateEst[0] * math.cos(self.stateEst[1])
+    A[3,3] = 1
+
+    # A priori covariance:
+    Pp = A * self.P * A.transpose() + self.Q
+
+    if not self.lastPose is None:
+      self._ekfFullCorrect(xp,Pp)
+    else:
+      # No pose update, just correct vel:
+      self._ekfVelCorrect(xp, Pp)
+
+    # Broadcast the estimate
+    msg = StateEstimate()
+    msg.state = [self.stateEst[i,0] for i in range(4)]
+    msg.covarRows = [CovarianceRow() for i in range(4)] 
+    for i in range(4):
+      msg.covarRows[i].cols = [self.P[i,j] for j in range(4)]
+    self.estPub.publish(msg)
+
+    print(self.stateEst.transpose())
+
+  def _ekfFullCorrect(self, xp, Pp):
+    """ Correct all state, using latest velocity and pose """
     # Measurements:
     m = np.array([[self.lastVel], 
             [self.lastPose.Yaw], 
             [self.lastPose.X], 
             [self.lastPose.Y]])
-
-    # A priori state estimate:
-    xp = np.zeros((4,1))
-    xp[0] = self.velNum*(self.velOutDelay[-4] + self.velOutDelay[-3]) - self.velDen*self.stateEst[0]
-    xp[1] = self.stateEst[1] + \
-        self.stateEst[0]*math.sin(self.steerCtrl)*self.ts / self.length
-    xp[2] = self.stateEst[2] + \
-        self.stateEst[0]*math.cos(self.stateEst[1])*self.ts
-    xp[3] = self.stateEst[3] + \
-        self.stateEst[0]*math.sin(self.stateEst[1])*self.ts
-
-    # Jacobian of current state w.r.t previous state:
-    A = np.zeros((4,4))
-    A[0,0] = -self.velDen
-    A[1,0] = self.ts * math.sin(self.steerCtrl) / self.length
-    A[1,1] = 1
-    A[2,0] = self.ts * math.cos(self.stateEst[1])
-    A[2,1] = -self.ts * self.stateEst[0] * math.sin(self.steerCtrl)
-    A[2,2] = 1
-    A[3,0] = self.ts * math.sin(self.steerCtrl)
-    A[3,1] = self.ts * self.stateEst[0] * math.cos(self.steerCtrl)
-    A[3,3] = 1
-
-    # A priori covariance:
-    Pp = A * self.P * A.transpose() + self.Q
 
     # Kalman Gain:
     K = Pp * np.linalg.inv((Pp + self.R))
@@ -192,18 +209,28 @@ class ControllerEstimator:
 
     self.lastVel = None
     self.lastPose = None
-    return True
+
+  def _ekfVelCorrect(self, xp, Pp):
+    """ Correct only velocity, leaving dead-reckoned pose estimates """
+    # Kalman update for just velocity
+    K = Pp[0,0] / (Pp[0,0] + self.R[0,0])
+    self.stateEst[0,0] = xp[0] + K*(self.lastVel - xp[0])
+    self.P[0,0] = (1-K)*Pp[0, 0]
+    
+    # And use prior as pose estimate:
+    self.stateEst[1:] = xp[1:]
+    self.P[1:, 1:] = Pp[1:, 1:]
+
+    self.lastVel = None
 
   def _velocityCb(self, vel, filtered, time):
     if not self.running:
       return
     self.lastVel = vel
 
-    if self._ekfUpdate():
-      self._velCtrl(self.stateEst[0])
-      self._steerCtrl(self.stateEst[1], self.stateEst[2], self.stateEst[3])
-    else:
-      self._velCtrl(vel)
+    self._ekfUpdate()
+    self._velCtrl(self.stateEst[0,0])
+    self._steerCtrl(self.stateEst[1,0], self.stateEst[2,0], self.stateEst[3,0])
 
     self._publish()
     return

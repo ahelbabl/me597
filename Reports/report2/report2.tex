@@ -12,6 +12,11 @@
 
 \clearpage
 
+\section{Introduction}
+
+%TODO: complete this.
+Placeholder.
+
 \section{Extended Kalman Filter Design}
 
 \subsection{Motion Model}
@@ -67,9 +72,8 @@ y_k = \left[ \begin{array}{c} v_f \\ \psi \\ x \\ y \end{array} \right]_k
 
 \subsection{Measurement and Process Covariance}
 
-Placeholder.
-
 % TODO: Do this and report on it.  Will require LPS.
+Placeholder.
 
 \subsection{Prediction}
 
@@ -115,18 +119,16 @@ P_k = (I - K_k H_k) \bar{P}_k
 
 \subsection{Simulation Results}
 
-Placeholder.
-
 % TODO: complete this, Simulation results depend on getting good figures for covariances.
+Placeholder.
 
 \subsection{Empirical Results}
 
+% TODO: complete this.  Depends on covariances, LPS.
 Placeholder.
 
-% TODO: complete this.  Depends on covariances, LPS.
-
 \section{Mapping Design}
-As it moves, the ro model.
+As it moves, the robot is required use LIDAR data to produce an occupancy grid map of its surroundings.  In addition to EKF state estimates, the mapping algorithm will require an inverse measurement model for the LIDAR.
 
 \section{LIDAR Measurement Model}
 The LIDAR provides a sequence of range measurements $r_i$, each of which is made in a different direction, $\phi_i$:
@@ -160,7 +162,23 @@ i_{nearest} = \underset{i}{\operatorname{argmin}} \quad | \phi_i - tan^{-1}(\fra
 
 Where $(x_c, y_c)$ are the co-ordinates of the centre of the cell, and $(x_r, y_r)$ are the current co-ordinates of the robot.  
 
-Next, the range measurement $r_i$ is compared against the distance to the cell.  If the measured range is within some threshold $\Beta$ of the distance to the cell, it is considered likely that the cell is occupied.  If the range measurement is greater than the distance to the cell, it is considered likely that the cell is unoccupied.  Finally, if the range measurement is less than the distance to the cell, no information is obtained about the state of the cell.
+Once $i_{nearest}$ is known, the range measurement $r_{i,nearest}$ is compared against the distance to the cell.  If the measured range is within some threshold $\alpha$ of the distance to the cell, it is considered likely that the cell is occupied.  If the range measurement is substantially greater than the distance to the cell, it is considered likely that the cell is unoccupied.  Finally, if the range measurement is less than the distance to the cell, no information is obtained about the state of the cell.
 
+This is an extremely simplistic inverse measurement model.  Uncertainty in the position and heading of the robot are ignored.  Uncertainty in scanline direction is ignored, and the arc covered by a particular range measurement is assumed to be equal to the angular separation of consecutive measurements.  The use of the scanline which passes nearest the centre of the cell ignores the possibility that multiple scanlines might pass through a single cell, or, alternatively, that even the nearest scanline does not pass through the cell at all.  
+
+\subsection{Simulation Results}
+
+% TODO: matlab simulation.  
+Placeholder.
+
+\subsection{Empirical Results}
+
+% TODO: requires LPS.
+Placeholder.
+
+\section{Conclusions}
+
+% TODO: need a whole raft of results.
+Placeholder.
 
 \end{document}

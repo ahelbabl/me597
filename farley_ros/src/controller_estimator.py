@@ -190,7 +190,7 @@ class ControllerEstimator:
       msg.covarRows[i].cols = [self.P[i,j] for j in range(4)]
     self.estPub.publish(msg)
 
-    print(self.stateEst.transpose())
+#    print(self.stateEst.transpose())
 
   def _ekfFullCorrect(self, xp, Pp):
     """ Correct all state, using latest velocity and pose """

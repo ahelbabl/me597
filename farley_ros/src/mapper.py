@@ -6,6 +6,7 @@
 import roslib; roslib.load_manifest('farley_ros')
 import rospy
 from sensor_msgs.msg import LaserScan
+from farley_ros.msg import StateEstimate
 
 import numpy as np
 import math as m
@@ -18,6 +19,7 @@ Range = namedtuple('Range', 'min max incr')
 class Mapper:
   def __init__(self):
     rospy.Subscriber('/scan', LaserScan, self._scanCb)
+    rospy.Subscriber('state_est', StateEstimate, self._stateCb)
 
     self.alpha = 0.05
 
@@ -29,11 +31,11 @@ class Mapper:
     self.scanRange = None
 
     # Map extents and resolution [m]
-    self.x = Range(-1, 1, 0.1)
-    self.y = Range(-1, 1, 0.1)
+    self.x = Range(-1, 1, 0.25)
+    self.y = Range(-1, 1, 0.25)
 
     # Current robot pose:
-    self.pose = MapPose(0,0,0)
+    self.pose = None
 
     # The actual occupancy grid
     self.grid = np.zeros((
@@ -102,29 +104,20 @@ class Mapper:
     """ Updates a specific cell with new LIDAR data """
     # Angle to this cell:
     ang = self.getCellAngle(xi, yi)
+    # Distance to this cell:
+    cellDist = self.getDistance(xi, yi)
     # Nearest obstacle in the direction of the cell:
     nearest = self.getRange(scan, ang)
-    if (nearest == 0):
-	nearest = self.scanRange.max # lidar value of 0 when no obstacles in sight
-    cellDistance = m.sqrt( pow(self.xAxis[xi]-self.pose.x,2) + pow((self.yAxis[yi]-self.pose.y),2))
-    if (self.scanRange is None) or (nearest is None) or (nearest > self.scanRange.max) or (cellDistance >nearest+self.alpha):
-     # Out of scanner range or behind an obstacle, do not change the existing range information
-     pass
-    elif (abs(nearest - cellDistance) < self.alpha):
-     self.grid[xi,yi] += self.highP
+    
+    if (nearest is None) or (nearest > self.scanRange.max) \
+        or (nearest < self.scanRange.min) or (cellDist > nearest+self.alpha):
+      # Out of scanner range or behind an obstacle, do not change the existing range information
+      pass
+    elif (abs(nearest - cellDist) < self.alpha):
+      self.grid[xi,yi] += self.highP
     else:
-     self.grid[xi,yi] += self.lowP
+      self.grid[xi,yi] += self.lowP
     return
-    # TODO: finish this logic
-
-  def updateMap(self, scan):
-    """ Updates the occupancy grid with new scan data """
-    for xi in range(self.grid.shape[0]):
-      for yi in range(self.grid.shape[1]):
-	self._updateCell(xi, yi, scan)
-
-    print(self.grid)
-    print("empty test")
 
   def _scanCb(self, scan):
     if self.scanAngle is None:
@@ -135,5 +128,18 @@ class Mapper:
     self.scanAngle = Range(scan.angle_min, scan.angle_max, scan.angle_increment)
     self.scanRange = Range(scan.range_min, scan.range_max, None)
 
-    self.updateMap(scan)
+    if self.pose is None:
+      # Need state estimate to do mapping
+      return
+
+    # Update each map cell:
+    for xi in range(self.grid.shape[0]):
+      for yi in range(self.grid.shape[1]):
+        self._updateCell(xi, yi, scan)
+
+    print(self.grid)
+
+  def _stateCb(self, state):
+    # state.state is [vel, heading, x pos, y pos]
+    self.pose = MapPose(state.state[2], state.state[3], state.state[1])
 

@@ -5,6 +5,7 @@
 
   <group ns="clearpath/robots/default">  
     <node pkg="farley_ros" type="mapper_node.py" name="mapper" output="screen"/>
+    <node pkg="farley_ros" type="ekf_test.py" name="ekf_test" output="screen"/>
 
     <node pkg="clearpath_horizon" type="horizon.py" name="horizon" machine="robot" respawn="true" output="screen">
      <!-- Uncomment the following line to manually specify serial device, rather

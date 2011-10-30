@@ -10,8 +10,8 @@ from controller_estimator import ControllerEstimator
 rospy.init_node('ekf_test')
 
 c = ControllerEstimator()
-c.setVelocity(0.1)
-c.setSteeringAngle(0.1)
+c.setVelocity(0.0)
+c.setSteeringAngle(0.0)
 c.start()
 
 rospy.spin()

@@ -1,6 +1,7 @@
 \documentclass[11pt]{article} % use larger type; default would be 10pt
 
 \usepackage{graphicx}
+\usepackage{amsmath}
 \usepackage[parfill]{parskip}
 
 \title{ME 597 Lab 2 Report}
@@ -53,14 +54,22 @@ and
 \label{y}
 \end{equation}
 
-\subsection{Measurement Model}
+\subsection{Measurement Models}
 
-A simple measurement model where all states are directly measured is used.  Encoder readings are differentiated to yield direct forward velocity measurements, and the local position system yields direct measurements of heading and planar position.  This measurement can also be reasonably used with GPS by estimating heading from successive position measurements, so long as the distance travelled between measurements is large relative to position measurement error.
+A simple measurement model where all states are directly measured is used.  Encoder readings are differentiated to yield direct forward velocity measurements.
+The local position system yields direct measurements of heading and planar position.  
+GPS can be considered to have the same model as the LPS, with heading directly estimated from successive position measurements, so long as the distance travelled between measurements is large relative to position measurement error.
 
-The measurement model is defined as follows:
+The measurement model is trivially defined as follows:
 \begin{equation}
 y_k = \left[ \begin{array}{c} v_f \\ \psi \\ x \\ y \end{array} \right]_k
 \end{equation}
+
+\subsection{Measurement and Process Covariance}
+
+Placeholder.
+
+% TODO: Do this and report on it.  Will require LPS.
 
 \subsection{Prediction}
 
@@ -103,6 +112,55 @@ and
 \begin{equation}
 P_k = (I - K_k H_k) \bar{P}_k
 \end{equation}
+
+\subsection{Simulation Results}
+
+Placeholder.
+
+% TODO: complete this, Simulation results depend on getting good figures for covariances.
+
+\subsection{Empirical Results}
+
+Placeholder.
+
+% TODO: complete this.  Depends on covariances, LPS.
+
+\section{Mapping Design}
+As it moves, the ro model.
+
+\section{LIDAR Measurement Model}
+The LIDAR provides a sequence of range measurements $r_i$, each of which is made in a different direction, $\phi_i$:
+
+\begin{equation}
+r = \{r_1 \dots r_k\} \quad r_i \in [r_{min}, r_{max}]
+\end{equation}
+
+\begin{equation}
+\phi = \{\phi_1 \dots \phi_k\} \quad \phi_i \in [\phi_{min}, \phi_{max}]
+\end{equation}
+
+\section{Inverse LIDAR Measurement Model}
+In order to compute an occupancy grid, we must use LIDAR to determine whether or not a particular grid cell is occupied.  For any given cell, there are three possibilities:
+
+\begin{enumerate}
+ \item At least one scanline passes through the cell, but no range measurements fall within the cell. \\
+ \item At least one range measurement falls within the cell. \\
+ \item No scanlines pass through the cell. \\
+\end{enumerate}
+
+In the first case, it can be inferred with confidence that the cell is unoccupied.  
+In the second case, it is clear that the cell contains an object.  
+The third case arises either when a cell is obscured by a nearby object, or when the cell is outside of the area swept by the LIDAR.  In the third case, no information is about the status of the cell.
+
+In order to evaluate the state of a cell, we find the scanline which passes closest to the centre of the cell:
+
+\begin{equation}
+i_{nearest} = \underset{i}{\operatorname{argmin}} \quad | \phi_i - tan^{-1}(\frac{y_c - y_r}{x_c - x_r}) |
+\end{equation}
+
+Where $(x_c, y_c)$ are the co-ordinates of the centre of the cell, and $(x_r, y_r)$ are the current co-ordinates of the robot.  
+
+Next, the range measurement $r_i$ is compared against the distance to the cell.  If the measured range is within some threshold $\Beta$ of the distance to the cell, it is considered likely that the cell is occupied.  If the range measurement is greater than the distance to the cell, it is considered likely that the cell is unoccupied.  Finally, if the range measurement is less than the distance to the cell, no information is obtained about the state of the cell.
 
 
 \end{document}

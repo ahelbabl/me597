@@ -31,8 +31,8 @@ class Mapper:
     self.scanRange = None
 
     # Map extents and resolution [m]
-    self.x = Range(-1, 1, 0.25)
-    self.y = Range(-1, 1, 0.25)
+    self.x = Range(-2, 2, 0.05)
+    self.y = Range(-2, 2, 0.05)
 
     # Current robot pose:
     self.pose = None
@@ -137,7 +137,7 @@ class Mapper:
       for yi in range(self.grid.shape[1]):
         self._updateCell(xi, yi, scan)
 
-    print(self.grid)
+#    print(self.grid)
 
   def _stateCb(self, state):
     # state.state is [vel, heading, x pos, y pos]

@@ -10,11 +10,18 @@ from controller_estimator import ControllerEstimator
 rospy.init_node('ekf_test')
 
 c = ControllerEstimator()
-c.setVelocity(0.0)
-c.setSteeringAngle(0.0)
+c.setVelocity(0.2)
+c.setSteeringAngle(0.35)
 c.start()
 
 rospy.spin()
+
+out = open('/home/iain/state.dat', 'w')
+for s in c.stateRecord:
+  for i in range(s.shape[0]):
+    out.write('{0} '.format(s[i,0]))
+  out.write('\n')
+out.close()
 
 #rospy.sleep(5)
 #

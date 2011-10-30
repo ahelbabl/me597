@@ -41,6 +41,7 @@ class ControllerEstimator:
     self.velCtrl = 0.0  # [-100,100]
 
     # Steering control state:
+    self.stateRecord = []
 
     # Proportional control constant for steering angle.
     self.kSteer = 0.5
@@ -54,11 +55,6 @@ class ControllerEstimator:
     self.steerRef = None # [-0.4,0.4] [rad]
     self.steerCtrl = None # [-100,100]
     self.setSteeringAngle(0.0) # initialize sensibly
-
-    # Record pose data for inspectimification
-    self.velRecord = np.array([0])
-    self.xRecord = np.array([0])
-    self.yRecord = np.array([0])
 
     # EKF State:
     # Latest measurements.  Set to None when consumed for EKF estimate. 
@@ -190,6 +186,8 @@ class ControllerEstimator:
       msg.covarRows[i].cols = [self.P[i,j] for j in range(4)]
     self.estPub.publish(msg)
 
+    self.stateRecord = self.stateRecord + [self.stateEst]
+
 #    print(self.stateEst.transpose())
 
   def _ekfFullCorrect(self, xp, Pp):
@@ -245,8 +243,6 @@ class ControllerEstimator:
     if self.velRef is None:
       return
 
-    self.velRecord = np.concatenate((self.velRecord, np.array([vel])))
-
     # Calculate the control signal:
     err = self.velRef - vel
     p = self.kp * err
@@ -261,11 +257,6 @@ class ControllerEstimator:
     if (self.xRef is None) or (self.yRef is None) or (self.hRef is None):
       return
 
-    self.xRecord = np.concatenate((self.xRecord, np.array([X])))
-    self.yRecord = np.concatenate((self.yRecord, np.array([Y])))
-    self.outfile.write('{0} {1} {2} {3}\n'.format(
-          header.stamp.to_sec(), X, Y, Yaw))
-   
     # Calculate heading error
     ang = (Yaw * math.pi / 180)
     eHead = self.hRef - ang

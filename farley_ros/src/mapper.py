@@ -11,6 +11,7 @@ import numpy as np
 import math as m
 from collections import namedtuple
 
+
 MapPose = namedtuple('MapPose', 'x y h')
 Range = namedtuple('Range', 'min max incr')
 
@@ -28,8 +29,8 @@ class Mapper:
     self.scanRange = None
 
     # Map extents and resolution [m]
-    self.x = Range(-1.0, 1.0, 0.1)
-    self.y = Range(-1.0, 1.0, 0.1)
+    self.x = Range(-1, 1, 0.1)
+    self.y = Range(-1, 1, 0.1)
 
     # Current robot pose:
     self.pose = MapPose(0,0,0)
@@ -103,16 +104,17 @@ class Mapper:
     ang = self.getCellAngle(xi, yi)
     # Nearest obstacle in the direction of the cell:
     nearest = self.getRange(scan, ang)
+    if (nearest == 0):
+	nearest = self.scanRange.max # lidar value of 0 when no obstacles in sight
     cellDistance = m.sqrt( pow(self.xAxis[xi]-self.pose.x,2) + pow((self.yAxis[yi]-self.pose.y),2))
-    if (self.scanRange is None) or (nearest < self.scanRange.min) or (nearest > self.scanRange.max) or (cellDistance > nearest):
+    if (self.scanRange is None) or (nearest is None) or (nearest > self.scanRange.max) or (cellDistance >nearest+self.alpha):
+     # Out of scanner range or behind an obstacle, do not change the existing range information
      pass
     elif (abs(nearest - cellDistance) < self.alpha):
      self.grid[xi,yi] += self.highP
     else:
      self.grid[xi,yi] += self.lowP
-      # Out of scanner range, no information, do not change the existing range information
     return
-
     # TODO: finish this logic
 
   def updateMap(self, scan):
@@ -122,6 +124,7 @@ class Mapper:
 	self._updateCell(xi, yi, scan)
 
     print(self.grid)
+    print("empty test")
 
   def _scanCb(self, scan):
     if self.scanAngle is None:
@@ -131,7 +134,6 @@ class Mapper:
 
     self.scanAngle = Range(scan.angle_min, scan.angle_max, scan.angle_increment)
     self.scanRange = Range(scan.range_min, scan.range_max, None)
-
 
     self.updateMap(scan)
 

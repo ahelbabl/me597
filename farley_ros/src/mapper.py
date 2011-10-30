@@ -18,12 +18,18 @@ class Mapper:
   def __init__(self):
     rospy.Subscriber('/scan', LaserScan, self._scanCb)
 
+    self.alpha = 0.05
+
+    #Logit Probabilities
+    self.highP = m.log10(0.7/(1-0.7))
+    self.lowP  = m.log10(0.3/(1-0.3))
+
     self.scanAngle = None
     self.scanRange = None
 
     # Map extents and resolution [m]
-    self.x = Range(-1.0, 1.0, 0.15)
-    self.y = Range(-1.0, 1.0, 0.15)
+    self.x = Range(-1.0, 1.0, 0.1)
+    self.y = Range(-1.0, 1.0, 0.1)
 
     # Current robot pose:
     self.pose = MapPose(0,0,0)
@@ -97,11 +103,15 @@ class Mapper:
     ang = self.getCellAngle(xi, yi)
     # Nearest obstacle in the direction of the cell:
     nearest = self.getRange(scan, ang)
-    if (scanRange is None) or (nearest < self.scanRange.min) or (
-        nearest > self.scanRange.max):
-      # Out of scanner range, no information.
-      self.grid[xi,yi] = 0
-      return
+    cellDistance = m.sqrt( pow(self.xAxis[xi]-self.pose.x,2) + pow((self.yAxis[yi]-self.pose.y),2))
+    if (self.scanRange is None) or (nearest < self.scanRange.min) or (nearest > self.scanRange.max) or (cellDistance > nearest):
+     pass
+    elif (abs(nearest - cellDistance) < self.alpha):
+     self.grid[xi,yi] += self.highP
+    else:
+     self.grid[xi,yi] += self.lowP
+      # Out of scanner range, no information, do not change the existing range information
+    return
 
     # TODO: finish this logic
 
@@ -109,7 +119,7 @@ class Mapper:
     """ Updates the occupancy grid with new scan data """
     for xi in range(self.grid.shape[0]):
       for yi in range(self.grid.shape[1]):
-        _updateCell(xi, yi, scan)
+	self._updateCell(xi, yi, scan)
 
     print(self.grid)
 
@@ -121,5 +131,7 @@ class Mapper:
 
     self.scanAngle = Range(scan.angle_min, scan.angle_max, scan.angle_increment)
     self.scanRange = Range(scan.range_min, scan.range_max, None)
+
+
     self.updateMap(scan)
 

@@ -44,6 +44,7 @@ Pe(:,:,to) = Q;  % Initial condition covariance
 % Velocity model:
 load('vel_coeffs.mat');
 % Z transform numerator and denominator coefficients:
+delay = 4;
 zn = (Km*am*ts)/(am*ts + 2)*[1 1];
 zd = cat(2, [1 (am*ts-2)/(am*ts+2)], zeros(1, delay));
 

@@ -194,7 +194,7 @@ class ControllerEstimator:
     """ Correct all state, using latest velocity and pose """
     # Measurements:
     m = np.matrix([[self.lastVel], 
-            [self.lastPose.Yaw], 
+            [self.lastPose.Yaw*m.pi/180], 
             [self.lastPose.X], 
             [self.lastPose.Y]])
 
@@ -228,7 +228,7 @@ class ControllerEstimator:
 
     self._ekfUpdate()
     self._velCtrl(self.stateEst[0,0])
-    self._steerCtrl(self.stateEst[1,0], self.stateEst[2,0], self.stateEst[3,0])
+    self._steerCtrl(self.stateEst[2,0], self.stateEst[3,0], self.stateEst[1,0])
 
     self._publish()
     return
@@ -253,12 +253,11 @@ class ControllerEstimator:
 
     self.velCtrl = self._saturate(p + self.integrator, 100)
 
-  def _steerCtrl(self, X, Y, Yaw):
+  def _steerCtrl(self, X, Y, ang):
     if (self.xRef is None) or (self.yRef is None) or (self.hRef is None):
       return
 
     # Calculate heading error
-    ang = (Yaw * math.pi / 180)
     eHead = self.hRef - ang
     
     # Calculate crosstrack error.  Derived by wizards.

@@ -23,9 +23,15 @@ class Mapper:
 
     self.alpha = 0.05
 
+    # Forward offset of lidar from robot position, because mapping wants
+    # lidar position rather than robot position.
+    self.lidarOfst = 0.15; # [m]
+
     #Logit Probabilities
-    self.highP = m.log10(0.7/(1-0.7))
-    self.lowP  = m.log10(0.3/(1-0.3))
+    #self.highP = m.log10(0.7/(1-0.7))
+    #self.lowP  = m.log10(0.3/(1-0.3))
+    self.highP = 1
+    self.lowP = -1
 
     self.scanAngle = None
     self.scanRange = None
@@ -141,6 +147,8 @@ class Mapper:
 
   def _stateCb(self, state):
     # state.state is [vel, heading, x pos, y pos]
-    self.pose = MapPose(state.state[2], state.state[3], state.state[1])
+    self.pose = MapPose(state.state[2]+self.lidarOfst*m.cos(state.state[1]),
+                        state.state[3]+self.lidarOfst*m.sin(state.state[1]),
+                        state.state[1])
 #    print(self.pose)
 

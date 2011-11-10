@@ -22,28 +22,31 @@ Placeholder.
 \subsection{Motion Model}
 The robot motion model has the following state:
 \begin{equation}
+x_t = 
 \left[ \begin{array}{c}
 v_f \\
 \psi \\
 x \\
 y
-\end{array} \right] 
+\end{array} \right] _t
 \end{equation}
 Where $v_f$ is forward velocity, $\psi$ is heading, and $x$ and $y$ are position in the horizontal plane.  The inputs to the system are:
 \begin{equation}
+u_t =
 \left[ \begin{array}{c}
 V_m \\
 \delta
-\end{array} \right]
+\end{array} \right] _t
 \end{equation}
 Where $V_m$ is motor power, and $\delta$ is steering angle.
 
-Due to the presence of a delay, velocity is most conveniently modelled in discrete-time, and has the following transfer function:
+% TODO: continuous-timify this:
+Due to the presence of a delay, velocity is conveniently modelled in discrete-time, and has the following transfer function:
 \begin{equation}
-G_v(z) =  (\frac{K T \alpha}{\alpha T + 2}) (\frac{z + 1}{z + \frac{\alpha T - 2}{\alpha T + 2}}) (\frac{1}{z^4})
+G_v(z) =  (\frac{K T \alpha}{\alpha T + 2}) (\frac{z + 1}{z + \frac{\alpha T - 2}{\alpha T + 2}}) (\frac{1}{z^d})
 \label{vf}
 \end{equation}
-Where $K$ and $\alpha$ are constants which may be found experimentally, and $T$ is the sampling period of 50 ms.
+Where $K$, $\alpha$, and $d$ are constants which may be found experimentally, and $T$ is the sampling period of 50 ms.
 
 The following differential equations define $\psi$, $x$, and $y$:
 \begin{equation}
@@ -67,7 +70,7 @@ GPS can be considered to have the same model as the LPS, with heading directly e
 
 The measurement model is trivially defined as follows:
 \begin{equation}
-y_k = \left[ \begin{array}{c} v_f \\ \psi \\ x \\ y \end{array} \right]_k
+y_t = \left[ \begin{array}{c} v_f \\ \psi \\ x \\ y \end{array} \right]_t
 \end{equation}
 
 \subsection{Measurement and Process Covariance}
@@ -145,9 +148,9 @@ r = \{r_1 \dots r_k\} \quad r_i \in [r_{min}, r_{max}]
 In order to compute an occupancy grid, we must use LIDAR to determine whether or not a particular grid cell is occupied.  For any given cell, there are three possibilities:
 
 \begin{enumerate}
- \item At least one scanline passes through the cell, but no range measurements fall within the cell. \\
- \item At least one range measurement falls within the cell. \\
- \item No scanlines pass through the cell. \\
+ \item At least one scanline passes through the cell, but no range measurements fall within the cell.
+ \item At least one range measurement falls within the cell.
+ \item No scanlines pass through the cell.
 \end{enumerate}
 
 In the first case, it can be inferred with confidence that the cell is unoccupied.  

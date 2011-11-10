@@ -178,6 +178,7 @@ class ControllerEstimator:
       # No pose update, just correct vel:
       self._ekfVelCorrect(xp, Pp)
 
+
     # Broadcast the estimate
     msg = StateEstimate()
     msg.state = [self.stateEst[i,0] for i in range(4)]
@@ -194,7 +195,7 @@ class ControllerEstimator:
     """ Correct all state, using latest velocity and pose """
     # Measurements:
     m = np.matrix([[self.lastVel], 
-            [self.lastPose.Yaw*m.pi/180], 
+            [self.lastPose.Yaw*math.pi/180], 
             [self.lastPose.X], 
             [self.lastPose.Y]])
 
@@ -204,6 +205,11 @@ class ControllerEstimator:
     # State estimates:
     self.stateEst = xp + K*(m - xp)
     self.P = (np.identity(4) - K)*Pp
+
+    debug = np.zeros((4,2))
+    debug[:,0] = self.stateEst.transpose()
+    debug[:,1] = m.transpose()
+    print(debug) 
 
     self.lastVel = None
     self.lastPose = None
@@ -236,6 +242,9 @@ class ControllerEstimator:
   def _poseCb(self, pose):
 #    print("Pose: x: {0}, y: {1}, h: {2}".format(pose.X, pose.Y, pose.Yaw)) 
     if not self.running:
+      return
+    if (abs(pose.X) > 900) or (abs(pose.Y) > 900) or (abs(pose.Yaw) > 900):
+      # (1000,1000,1000) indicates no pose fix.
       return
     self.lastPose = pose
 

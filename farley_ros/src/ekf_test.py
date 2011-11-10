@@ -11,7 +11,7 @@ import os
 rospy.init_node('ekf_test')
 
 c = ControllerEstimator()
-c.setVelocity(0.0)
+c.setVelocity(0.00)
 c.setSteeringAngle(0.0)
 c.start()
 

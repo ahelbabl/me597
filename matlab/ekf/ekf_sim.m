@@ -136,41 +136,41 @@ figure(2);
 clf();
 
 % Velocity
-subplot(2,2,1);
+subplot(2,1,1);
 hold on
-title('Velocity (m/s)');
+ylabel('Forward Velocity (m/s)');
 plot(t,m(1,:),'g*');
-plot(t,xe(1,:)+sqrt(reshape(Pe(1,1,:),size(t))));
-plot(t,xe(1,:)-sqrt(reshape(Pe(1,1,:),size(t))));
+plot(t,xe(1,:));
 plot(t,x(1,:),'r');
 hold off
 
 % Heading
-subplot(2,2,2);
+subplot(2,1,2);
 hold on
-title('Heading (radian)');
+ylabel('Heading (radian)');
 plot(t,m(2,:),'g*');
-plot(t,xe(2,:)+sqrt(reshape(Pe(2,2,:),size(t))));
-plot(t,xe(2,:)-sqrt(reshape(Pe(2,2,:),size(t))));
+plot(t,xe(2,:));
 plot(t,x(2,:),'r');
 hold off
 
+figure(3);
+clf();
+subplot(2,1,1);
+
 % X Position
-subplot(2,2,3);
+subplot(2,1,1);
 hold on
-title('X Position (m)');
+ylabel('X Position (m)');
 plot(t,m(3,:),'g*');
-plot(t,xe(3,:)+sqrt(reshape(Pe(3,3,:),size(t))));
-plot(t,xe(3,:)-sqrt(reshape(Pe(3,3,:),size(t))));
+plot(t,xe(3,:));
 plot(t,x(3,:),'r');
 hold off
 
 % Y Position
-subplot(2,2,4);
+subplot(2,1,2);
 hold on
-title('Y Position (m)');
+ylabel('Y Position (m)');
 plot(t,m(4,:),'g*');
-plot(t,xe(4,:)+sqrt(reshape(Pe(4,4,:),size(t))),'b');
-plot(t,xe(4,:)-sqrt(reshape(Pe(4,4,:),size(t))),'b');
+plot(t,xe(4,:),'b');
 plot(t,x(4,:),'r');
 hold off

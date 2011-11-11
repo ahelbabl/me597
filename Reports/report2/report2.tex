@@ -129,21 +129,34 @@ P_k = (I - K_k H_k) \bar{P}_k
 
 \subsection{Simulation Results}
 
-% TODO: complete this, Simulation results depend on getting good figures for covariances.
-Placeholder.
+\begin{figure}[hbt]
+ \centering
+ \includegraphics[scale=0.60]{ekf_sim_vh.png}
+ \caption{Simulated EKF estimation of forward velocity and heading}
+ \label{ekf_s_vh}
+\end{figure}
+
+\begin{figure}[hbt]
+  \centering
+  \includegraphics[scale=0.60]{ekf_sim_xy.png}
+  \caption{Simulated EKF estimation of planar position}
+  \label{ekf_s_xy}
+\end{figure}
+
+\clearpage
 
 \subsection{Empirical Results}
 
 \begin{figure} [hbt]
  \centering
- \includegraphics[scale=0.60]{ekf_meas_vh.png} 
+ \includegraphics[scale=0.65]{ekf_meas_vh.png} 
  \caption{EKF estimation of forward velocity and heading}
  \label{ekf_m_vh}
 \end{figure}
 
 \begin{figure} [hbt]
  \centering
- \includegraphics[scale=0.60]{ekf_meas_xy.png}
+ \includegraphics[scale=0.65]{ekf_meas_xy.png}
  \caption{EKF estimation of planar position}
  \label{ekf_m_xy}
 \end{figure}

@@ -43,6 +43,9 @@ class Mapper:
     # Current robot pose:
     self.pose = None
 
+    # Record poses used for mapping
+    self.poseRecord = []
+
     # The actual occupancy grid
     self.grid = np.zeros((
         (self.x.max - self.x.min)/self.x.incr + 1,
@@ -72,7 +75,7 @@ class Mapper:
       return None
   
     # Calculate the index of the closest scan direction:
-    return int((angle - self.scanAngle.min) / self.scanAngle.incr)
+    return int((self.scanAngle.max - angle) / self.scanAngle.incr)
 
 
   def getRange(self, scan, angle):
@@ -114,9 +117,14 @@ class Mapper:
     cellDist = self.getDistance(xi, yi)
     # Nearest obstacle in the direction of the cell:
     nearest = self.getRange(scan, ang)
-    
-    if (nearest is None) or (nearest > self.scanRange.max) \
-        or (nearest < self.scanRange.min) or (cellDist > nearest+self.alpha):
+  
+    if nearest is None:
+      # Out of scanned region:
+      pass
+    elif (nearest < 0.01):
+      # LIDAR returns 0 when out of range (i.e. unobstructed)
+      self.grid[xi,yi] += self.lowP
+    elif (nearest > self.scanRange.max) or (cellDist > nearest+self.alpha):
       # Out of scanner range or behind an obstacle, do not change the existing range information
       pass
     elif (abs(nearest - cellDist) < self.alpha):
@@ -137,6 +145,8 @@ class Mapper:
     if self.pose is None:
       # Need state estimate to do mapping
       return
+
+    self.poseRecord = self.poseRecord + [self.pose]
 
     # Update each map cell:
     for xi in range(self.grid.shape[0]):

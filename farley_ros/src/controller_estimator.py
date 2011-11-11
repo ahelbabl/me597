@@ -40,8 +40,10 @@ class ControllerEstimator:
     self.velRef = None  # [m/s]
     self.velCtrl = 0.0  # [-100,100]
 
-    # Steering control state:
+    # Record values for analysis 
     self.stateRecord = []
+    self.msmtRecord = []
+    self.outputRecord = []
 
     # Proportional control constant for steering angle.
     self.kSteer = 0.5
@@ -68,9 +70,9 @@ class ControllerEstimator:
                        [0, 0, 0, 0.07]])
     # Measurement covariance:
     self.R = np.matrix([[0.0020, 0, 0, 0],
-                       [0, 0.7, 0, 0],
-                       [0, 0, 0.7, 0],
-                       [0, 0, 0, 0.7]])
+                       [0, 0.0001, 0, 0],
+                       [0, 0, 0.0001, 0],
+                       [0, 0, 0, 0.0001]])
 
     # Zero initial state
     self.stateEst = np.matrix(np.zeros((4,1)))
@@ -199,6 +201,9 @@ class ControllerEstimator:
             [self.lastPose.X], 
             [self.lastPose.Y]])
 
+    self.msmtRecord = self.msmtRecord + [m]
+    self.outputRecord = self.outputRecord + [[self.velCtrl, self.steerCtrl]]
+
     # Kalman Gain:
     K = Pp * np.linalg.inv((Pp + self.R))
 
@@ -206,10 +211,10 @@ class ControllerEstimator:
     self.stateEst = xp + K*(m - xp)
     self.P = (np.identity(4) - K)*Pp
 
-    debug = np.zeros((4,2))
-    debug[:,0] = self.stateEst.transpose()
-    debug[:,1] = m.transpose()
-    print(debug) 
+#    debug = np.zeros((4,2))
+#    debug[:,0] = self.stateEst.transpose()
+#    debug[:,1] = m.transpose()
+#    print(debug) 
 
     self.lastVel = None
     self.lastPose = None

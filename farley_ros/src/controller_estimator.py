@@ -230,6 +230,9 @@ class ControllerEstimator:
     self.stateEst[1:] = xp[1:]
     self.P[1:, 1:] = Pp[1:, 1:]
 
+    self.msmtRecord = self.msmtRecord + [np.array([[self.lastVel],[0],[0],[0]])]
+    self.outputRecord = self.outputRecord + [[self.velCtrl, self.steerCtrl]]
+
     self.lastVel = None
 
   def _velocityCb(self, vel, filtered, time):

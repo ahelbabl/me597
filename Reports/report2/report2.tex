@@ -2,6 +2,7 @@
 
 \usepackage{graphicx}
 \usepackage{amsmath}
+\usepackage{fullpage}
 \usepackage[parfill]{parskip}
 
 \title{ME 597 Lab 2 Report}
@@ -34,7 +35,9 @@ x \\
 y
 \end{array} \right] _t
 \end{equation}
-Where $v_f$ is forward velocity, $\psi$ is heading, and $x$ and $y$ are position in the horizontal plane.  The inputs to the system are:
+Where $v_f$ is forward velocity, $\psi$ is heading, and $x$ and $y$ are position in the horizontal plane.  
+
+The inputs to the system are:
 \begin{equation}
 u_t =
 \left[ \begin{array}{c}
@@ -44,15 +47,12 @@ V_m \\
 \end{equation}
 Where $V_m$ is motor power, and $\delta$ is steering angle.
 
-% TODO: continuous-timify this:
-Due to the presence of a delay, velocity is conveniently modelled in discrete-time, and has the following transfer function:
+The following differential equations define $v_f$, $\psi$, $x$, and $y$:
 \begin{equation}
-G_v(z) =  (\frac{K T \alpha}{\alpha T + 2}) (\frac{z + 1}{z + \frac{\alpha T - 2}{\alpha T + 2}}) (\frac{1}{z^d})
+\dot{v_f} = -\alpha v_f + K \alpha V_m
 \label{vf}
 \end{equation}
-Where $K$, $\alpha$, and $d$ are constants which may be found experimentally, and $T$ is the sampling period of 50 ms.
-
-The following differential equations define $\psi$, $x$, and $y$:
+Where $K$ and $\alpha$ are constants which may be found empirically.
 \begin{equation}
 \dot{\psi} = \frac{v_f}{L} sin(\delta)
 \end{equation}
@@ -66,6 +66,17 @@ and
 \label{y}
 \end{equation}
 
+The motion model is therefore:
+\begin{equation}
+\dot{x_t} = \left[ \begin{array}{c} 
+-\alpha v_f + K \alpha V_m \\
+\frac{v_f}{L} sin(\delta) \\
+v_f cos( \psi ) \\
+ sin( \psi )
+\end{array} \right] _t + w_t \quad \quad w_t \sim N(0, Q)
+\end{equation}
+
+
 \subsection{Measurement Models}
 
 A simple measurement model where all states are directly measured is used.  Encoder readings are differentiated to yield direct forward velocity measurements.
@@ -74,13 +85,9 @@ GPS can be considered to have the same model as the LPS, with heading directly e
 
 The measurement model is trivially defined as follows:
 \begin{equation}
-y_t = \left[ \begin{array}{c} v_f \\ \psi \\ x \\ y \end{array} \right]_t
+y_t = \left[ \begin{array}{c} v_f \\ \psi \\ x \\ y \end{array} \right]_t + v_t 
+\quad \quad v_t \sim N(0,R)
 \end{equation}
-
-\subsection{Measurement and Process Covariance}
-
-% TODO: Do this and report on it.  Will require LPS.
-Placeholder.
 
 \subsection{Prediction}
 
@@ -88,7 +95,7 @@ The a priori state expectation is computed from the motion model by
 \begin{equation}
 \bar{x}_k = f(\hat{x}_{k-1}, u_{k-1})
 \end{equation}
-Where $f$ may be trivially derived from equations \ref{vf} - \ref{y}.  Note that, technically, equation \ref{vf} violates the Markov assumption.  This could be corrected by incorporating a few input delay buffer cells in the sytem state.  This has no practical impact on filter behaviour, so it is ignored for the sake of simplicity.
+Where $f$ may be trivially derived from equations \ref{vf} - \ref{y}. 
 
 The a priori covariance is computed by linearizing about the current state:
 \begin{equation}
@@ -98,7 +105,7 @@ Where $A_k$ is the Jacobian, $\frac{\delta f}{\delta x} | _{\hat{x}_{k-1}, u_{k-
 \renewcommand{\arraystretch}{1.4}
 \begin{equation}
 \left[ \begin{array}{cccc}
--\frac{\alpha T - 2}{\alpha T + 2} & 0 & 0 & 0 \\
+-\alpha T & 0 & 0 & 0 \\
 \frac{T}{L} sin( \delta _{k-1} ) & 1 & 0 & 0 \\
 T cos(\psi _{k-1}) & - v_{f,k-1} T sin( \psi _{k-1}) & 1 & 0 \\
 T sin(\psi _{k-1}) & v_{f,k-1} T cos ( \psi _{k-1}) & 0 & 1 \\
@@ -126,13 +133,43 @@ P_k = (I - K_k H_k) \bar{P}_k
 
 \subsection{Simulation Results}
 
-% TODO: complete this, Simulation results depend on getting good figures for covariances.
-Placeholder.
+\begin{figure}[hbt]
+ \centering
+ \includegraphics[scale=0.60]{ekf_sim_vh.png}
+ \caption{Simulated EKF estimation of forward velocity and heading}
+ \label{ekf_s_vh}
+\end{figure}
+
+\begin{figure}[hbt]
+  \centering
+  \includegraphics[scale=0.60]{ekf_sim_xy.png}
+  \caption{Simulated EKF estimation of planar position}
+  \label{ekf_s_xy}
+\end{figure}
+
+\clearpage
 
 \subsection{Empirical Results}
 
-% TODO: complete this.  Depends on covariances, LPS.
-Placeholder.
+\begin{figure} [hbt]
+ \centering
+ \includegraphics[scale=0.65]{ekf_meas_vh.png} 
+ \caption{EKF estimation of forward velocity and heading}
+ \label{ekf_m_vh}
+\end{figure}
+
+\begin{figure} [hbt]
+ \centering
+ \includegraphics[scale=0.65]{ekf_meas_xy.png}
+ \caption{EKF estimation of planar position}
+ \label{ekf_m_xy}
+\end{figure}
+
+The local positioning system has been found to be extremely accurate.  Practically speaking, the EKF presents little useful gain over the accuracy of the LPS measurements.  We can, however, test the performance of the EKF with less accurate position data, by taking LPS data as ground truth, adding noise to the LPS data, and providing the resulting noisy data to the EKF.
+
+Figures \ref{ekf_m_vh} and \ref{ekf_m_xy} show the estimates produced by the EKF, applied to actual system inputs and noise-corrupted LPS measurements.  It can be seen that the EKF does an excellend job of recovering the original LPS measurement data.  Although we do not have good ground truth measurements for velocity, the velocity estimates do seem reasonable.
+
+\clearpage
 
 \section{Mapping Design}
 As it moves, the robot is required use LIDAR data to produce an occupancy grid map of its surroundings.  In addition to EKF state estimates, the mapping algorithm will require an inverse measurement model for the LIDAR.

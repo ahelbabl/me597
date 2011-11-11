@@ -15,12 +15,7 @@
 
 \section{Introduction}
 
-%TODO: Revise this section
-In the first portion of this lab experiment, an EKF state estimator was implemented on the robotic platform to accurately estimate 
-the robot's position. This estimator was implemented ontop of previously developed controllers for steering and velocity.
-In the second portion of the experiment, a LIDAR system was used to dynamically generate an environment map in the form of an occupancy 
-grid. The occupancy grid contained information about the robot's enviroment, such as data identifying the likelyhood of obstacles 
-and free space.
+In this lab, an Extended Kalman Filter state estimator is to be derived and implemented for a robot with Ackermann steering.  In addition to state estimation, the robot's LIDAR will be used to construct an occupancy grid map of its surroundings.
 
 \section{Extended Kalman Filter Design}
 
@@ -210,19 +205,30 @@ Once $i_{nearest}$ is known, the range measurement $r_{i,nearest}$ is compared a
 
 This is an extremely simplistic inverse measurement model.  Uncertainty in the position and heading of the robot are ignored.  Uncertainty in scanline direction is ignored, and the arc covered by a particular range measurement is assumed to be equal to the angular separation of consecutive measurements.  The use of the scanline which passes nearest the centre of the cell ignores the possibility that multiple scanlines might pass through a single cell, or, alternatively, that even the nearest scanline does not pass through the cell at all.  
 
-\subsection{Simulation Results}
-
-% TODO: matlab simulation.  
-Placeholder.
-
 \subsection{Empirical Results}
 
-% TODO: requires LPS.
-Placeholder.
+\begin{figure}[hbt]
+ \centering
+ \includegraphics[scale=0.38]{ContourMap.png}
+ \caption{A contour map of the occupancy grid logit(probability) values.}
+ \label{contour}
+\end{figure}
+
+\begin{figure}[hbt]
+ \centering
+ \includegraphics[scale=0.38]{SurfacePlot.png}
+ \caption{A surface map of the occupancy grid logit(probability) values.}
+ \label{surface}
+\end{figure}
+
+Figures \ref{contour} and \ref{surface} show the completed occupancy grid map, resulting from driving the robot within a smiley face formed of traffic cones.  Although the robot's turning radius was not sufficiently small to be able to scan the entire region without colliding with an obstacle, the occupancy grid seems to be a good representation of the actual environment.
+
+\clearpage
 
 \section{Conclusions}
 
-% TODO: need a whole raft of results.
-Placeholder.
+In the first portion of this lab experiment, an EKF state estimator was implemented on the robotic platform to accurately estimate the robot's position. This estimator was implemented ontop of previously developed controllers for steering and velocity.  Although the accuracy of the available measurement system is sufficient to obviate the need for an EKF estimator, it was found that the derived EKF estimator would provide excellent results if measurements were less accurate.
+
+In the second portion of the experiment, a LIDAR system was used to dynamically generate an environment map in the form of an occupancy grid.  The produced occupancy grid was found to be a reasonable representation of the robot's true environment.
 
 \end{document}

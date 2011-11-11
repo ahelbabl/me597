@@ -42,26 +42,7 @@ V_m \\
 \end{equation}
 Where $V_m$ is motor power, and $\delta$ is steering angle.
 
-The following differential equations define $v_f$, $\psi$, $x$, and $y$:
-\begin{equation}
-\dot{v_f} = -\alpha v_f + K \alpha V_m
-\label{vf}
-\end{equation}
-Where $K$ and $\alpha$ are constants which may be found empirically.
-\begin{equation}
-\dot{\psi} = \frac{v_f}{L} sin(\delta)
-\end{equation}
-Where $L$ is wheelbase length,
-\begin{equation}
-\dot{x} = v_f cos( \psi )
-\end{equation}
-and
-\begin{equation}
-\dot{y} = v_f sin( \psi )
-\label{y}
-\end{equation}
-
-The motion model is therefore:
+The motion model is:
 \begin{equation}
 \dot{x_t} = \left[ \begin{array}{c} 
 -\alpha v_f + K \alpha V_m \\
@@ -69,7 +50,9 @@ The motion model is therefore:
 v_f cos( \psi ) \\
  sin( \psi )
 \end{array} \right] _t + w_t \quad \quad w_t \sim N(0, Q)
+\label{motion}
 \end{equation}
+Where  $K$ and $\alpha$ are constants which may be found empirically and $L$ is the robot wheelbase length.
 
 
 \subsection{Measurement Models}
@@ -90,7 +73,7 @@ The a priori state expectation is computed from the motion model by
 \begin{equation}
 \bar{x}_k = f(\hat{x}_{k-1}, u_{k-1})
 \end{equation}
-Where $f$ may be trivially derived from equations \ref{vf} - \ref{y}. 
+Where $f(\cdotp)$ may be trivially derived from (\ref{motion}).
 
 The a priori covariance is computed by linearizing about the current state:
 \begin{equation}
@@ -126,6 +109,7 @@ and
 P_k = (I - K_k H_k) \bar{P}_k
 \end{equation}
 
+\clearpage
 \subsection{Simulation Results}
 
 \begin{figure}[hbt]

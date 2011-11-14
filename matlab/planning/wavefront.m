@@ -10,7 +10,7 @@ HEAD = 2;
 X = 3;
 Y = 4;
 
-% (convenience) Start positioN:
+% (convenience) Start position:
 start = x0(X:Y)';
 % Goal position:
 goal = [5 5]; 
@@ -38,4 +38,20 @@ subplot(2,2,1);
 hold on
 plotEnvironment(obstPts, regionMin, regionMax, start, goal);
 hold off
+
+% Generate an occupancy grid:
+occRes = 0.10; % occupancy grid resolution
+xaxis = [regionMin(1):occRes:regionMax(1)];
+yaxis = [regionMin(2):occRes:regionMax(2)];
+for k=1:length(yaxis)
+  x(k,:) = xaxis;
+end
+for k=1:length(xaxis)
+  y(:,k) = yaxis;
+end
+
+map = zeros(length(x), length(y));
+for k=1:numObsts
+   map = map + inpolygon(x, y, obstPts(:,2*(k-1)+1), obstPts(:,2*k));
+end
 

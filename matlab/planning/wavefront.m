@@ -2,13 +2,23 @@
 
 clear;
 
-% Initial vehicle state [forward velocity, heading, x, y]
-x0 = [0 0 0 0]';
+% Motion parameters
+dt = 0.05;   % sampling period
+v = 0.2;     % robot velocity
+maxU = 0.35; % maximum robot steering angle
+L = 0.265;   % robot wheelbase
+k = 0.5;     % steering control proportional constant.
+
+% Simulation stop parameters
+simMaxIter = 2000;    % how long to run before giving up?
+simGoalThresh = 0.5;  % how close to goal before done?
+
+% Initial vehicle state [heading, x, y]
+x0 = [0 0 0]';  % n.b. constant velocity model
 % Friendly index constants:
-VEL = 1;
-HEAD = 2;
-X = 3;
-Y = 4;
+HEAD = 1;
+X = 2;
+Y = 3;
 
 % (convenience) Start position:
 start = x0(X:Y)';
@@ -58,14 +68,14 @@ end
 % Generate the wavefront costmap
 cost = zeros(size(map));
 % Start and goal location indexes within the map:
-startInx = floor( (start-regionMin)/res );
-goalInx = floor( (goal-regionMin)/res );
+startInx = round( (start-regionMin)/res );
+goalInx = round( (goal-regionMin)/res );
 % The open set.  (nb: closed set are indexes s.t. cost(i,j) != 0)
 open = goalInx;
 cost(goalInx(1), goalInx(2)) = 1;
 % Index offsets which are 'adjacent' to a given point.
-adjacent = [ 1 0; 0 1; -1 0; 0 -1];  % immediate adjacents
-% adjacent = [ 1 -1; 1 0; 1 1; 0 -1; 0 0; 0 1; -1 -1; -1 0; -1 1 ];
+% adjacent = [ 1 0; 0 1; -1 0; 0 -1];  % immediate adjacents
+adjacent = [ 1 -1; 1 0; 1 1; 0 -1; 0 0; 0 1; -1 -1; -1 0; -1 1 ];
 while (size(open,1) ~= 0)
   % Iterate through cells adjacent to the cell at the top of the open queue:
   for k=1:size(adjacent,1)
@@ -117,7 +127,7 @@ for i=1:size(map,1)
     left = cost(i,j);
     right = cost(i,j);
     if (i~=1) && (cost(i-1,j)~=0)
-      % Not at left side, and not obstacle to left
+      
       left = cost(i-1,j);
       dx = res;
     end
@@ -157,4 +167,55 @@ n = size(map,1)*size(map,2);
 subplot(2,2,3);
 quiver(reshape(x,n,1),reshape(y,n,1),reshape(-costdx,n,1),reshape(-costdy,n,1));
 axis([regionMin(1) regionMax(1) regionMin(2) regionMax(2)])
+
+% Plot a robot trajectory.
+x = x0;
+u = 0;
+
+k = 1;
+while 1
+  k = k+1;
+  if (k>simMaxIter)
+    break
+  end
+
+  % Calculate the occupancy grid indices for the current position:
+  i = round((x(X,k-1) - regionMin(1)) / res);
+  j = round((x(Y,k-1) - regionMin(2)) / res);
+  if (i<1) || (i>length(xaxis))
+    break
+  end
+  if (j<1) || (j>length(yaxis))
+    break
+  end
+
+  d = norm(goal - x(X:Y,k-1)', 2);
+  if d < simGoalThresh
+    break
+  end
+
+  % Reference position is the gradient direction
+  gradDir = atan2(-costdy(i,j), -costdx(i,j));
+  err =  gradDir - x(HEAD,k-1);
+  if (err > pi)
+    err = err - 2*pi;
+  end
+  if (err < -pi)
+    err = err + 2*pi;
+  end
+  % u(k-1) = atan2(k*err, v);
+  u(k-1) = k*err;
+  u(k-1) = max(-maxU,min(maxU,u(k-1)));
+
+  x(X,k) = x(X,k-1) + dt*v*cos(x(HEAD,k-1));
+  x(Y,k) = x(Y,k-1) + dt*v*sin(x(HEAD,k-1));
+  x(HEAD,k) = x(HEAD,k-1) + dt*v*sin(u(k-1))/L;
+end
+
+figure(2);
+clf;
+hold on
+plotEnvironment(obstPts, regionMin, regionMax, start, goal);
+plot(x(X,:),x(Y,:));
+hold off
 

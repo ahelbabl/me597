@@ -40,9 +40,9 @@ plotEnvironment(obstPts, regionMin, regionMax, start, goal);
 hold off
 
 % Generate an occupancy grid map:
-occRes = 0.10; % occupancy grid resolution
-xaxis = [regionMin(1):occRes:regionMax(1)];
-yaxis = [regionMin(2):occRes:regionMax(2)];
+res = 0.10; % occupancy grid resolution
+xaxis = [regionMin(1):res:regionMax(1)];
+yaxis = [regionMin(2):res:regionMax(2)];
 for k=1:length(yaxis)
   x(:,k) = xaxis;
 end
@@ -58,11 +58,11 @@ end
 % Generate the wavefront costmap
 cost = zeros(size(map));
 % Start and goal location indexes within the map:
-startInx = floor( (start-regionMin)/occRes );
-goalInx = floor( (goal-regionMin)/occRes );
+startInx = floor( (start-regionMin)/res );
+goalInx = floor( (goal-regionMin)/res );
 % The open set.  (nb: closed set are indexes s.t. cost(i,j) != 0)
 open = goalInx;
-cost(goalInx) = 1;
+cost(goalInx(1), goalInx(2)) = 1;
 % Index offsets which are 'adjacent' to a given point.
 adjacent = [ 1 0; 0 1; -1 0; 0 -1];  % immediate adjacents
 % adjacent = [ 1 -1; 1 0; 1 1; 0 -1; 0 0; 0 1; -1 -1; -1 0; -1 1 ];
@@ -99,7 +99,62 @@ while (size(open,1) ~= 0)
 end
 
 subplot(2,2,2);
-imagesc(xaxis, yaxis, cost);
-axis square
+imagesc(xaxis, yaxis, cost');
 set(gca, 'YDir', 'normal');
+
+% Calculate the gradient of the costmap
+costdx = zeros(size(map));
+costdy = zeros(size(map));
+for i=1:size(map,1)
+  for j=1:size(map,2)
+    if cost(i,j) == 0
+      % no gradient for obstacles
+      continue
+    end
+
+    % Calculate differential in x
+    dx = 0;
+    left = cost(i,j);
+    right = cost(i,j);
+    if (i~=1) && (cost(i-1,j)~=0)
+      % Not at left side, and not obstacle to left
+      left = cost(i-1,j);
+      dx = res;
+    end
+    if (i~=size(map,1)) && (cost(i+1,j)~=0)
+      % Not at right side, and not obstacle to right
+      right = cost(i+1,j);
+      dx = dx + res;
+    end
+    if dx ~= 0
+      % Is derivative defined?
+      costdx(i,j) = (right-left)/dx;
+    end
+
+    % Calculate differential in y
+    dy = 0;
+    up = cost(i,j);
+    down = cost(i,j);
+    if (j~=1) && (cost(i,j-1)~=0)
+      % Not at bottom, and no obstacle below
+      down = cost(i,j-1);
+      dy = res;
+    end
+    if (j~=size(map,2)) && (cost(i,j+1)~=0)
+      % Not at top, and no obstacle above
+      up = cost(i,j+1);
+      dy = dy + res;
+    end
+    if dy ~= 0
+      % Is derivative defined?
+      costdy(i,j) = (up-down)/dy;
+    end
+  end
+end
+
+% Plot the gradient of the costmap.
+n = size(map,1)*size(map,2);
+subplot(2,2,3);
+quiver(reshape(x,n,1),reshape(y,n,1),reshape(-costdx,n,1),reshape(-costdy,n,1));
+axis([regionMin(1) regionMax(1) regionMin(2) regionMax(2)])
 

@@ -41,14 +41,6 @@ maxLen.b = 3;
 [obstA, obstB, obstPts] = polygonal_world(regionMin+[.5 .5], regionMax-[.5 .5], ...
     minLen, maxLen, numObsts, start, goal, 0.5, 10000); 
 
-% Plot the map:
-figure(1);
-clf();
-subplot(2,2,1);
-hold on
-plotEnvironment(obstPts, regionMin, regionMax, start, goal);
-hold off
-
 % Generate an occupancy grid map:
 res = 0.10; % occupancy grid resolution
 xaxis = [regionMin(1):res:regionMax(1)];
@@ -108,7 +100,65 @@ while (size(open,1) ~= 0)
   open = open(2:end,:);
 end
 
-subplot(2,2,2);
+% Now, add costs for obstacle cells.  The planned path will not enter these 
+% cells, but we want costs to be defined in order to ensure that the robot can find
+% its way out of obscles when it enters due to imperfect path tracking.
+objBaseCost = max(reshape(cost,1,[])) + 1;
+% Scan for occupied cells reachable from unoccupied cells.  Give them base costs,
+% and add them to the open set
+for i = 1:length(xaxis)
+  for j = 1:length(yaxis)
+    % screen unoccupied cells, and occupied cells already added to open set
+    if cost(i,j) ~= 0
+      continue
+    end
+
+    reachable = 0;
+    for k=1:size(adjacent,1)
+      adj = [i j]+adjacent(k,:);
+      if map(adj(1),adj(2)) == 0
+        reachable = 1;
+        break
+      end
+    end
+    if reachable == 1
+      cost(i,j) = objBaseCost;
+      open(size(open,1)+1,:) = [i j];
+    end
+  end
+end
+while size(open, 1) ~= 0
+  % Iterate through cells adjacent to the cell at the top of the open queue:
+  for k=1:size(adjacent,1)
+    % Calculate index for current adjacent cell:
+    adj = open(1,:)+adjacent(k,:);
+    % Make sure adjacent cell is in the map
+    if min(adj) < 1
+      continue
+    end
+    if adj(1) > length(xaxis)
+      continue
+    end
+    if adj(2) > length(yaxis)
+      continue
+    end
+
+    % Make sure the adjacent cell is not closed:
+    if cost(adj(1), adj(2)) ~= 0
+      continue
+    end
+    % Set the cost and add the adjacent to the open set
+    cost(adj(1), adj(2)) = cost(open(1,1), open(1,2)) + 1;
+    open(size(open,1)+1,:) = adj;
+  end
+
+  % Pop the top open cell from the queue
+  open = open(2:end,:);
+end
+
+figure(1);
+clf();
+subplot(1,2,1);
 imagesc(xaxis, yaxis, cost');
 set(gca, 'YDir', 'normal');
 
@@ -162,12 +212,6 @@ for i=1:size(map,1)
   end
 end
 
-% Plot the gradient of the costmap.
-n = size(map,1)*size(map,2);
-subplot(2,2,3);
-quiver(reshape(x,n,1),reshape(y,n,1),reshape(-costdx,n,1),reshape(-costdy,n,1));
-axis([regionMin(1) regionMax(1) regionMin(2) regionMax(2)])
-
 % Plot a robot trajectory.
 x = x0;
 u = 0;
@@ -212,8 +256,7 @@ while 1
   x(HEAD,k) = x(HEAD,k-1) + dt*v*sin(u(k-1))/L;
 end
 
-figure(2);
-clf;
+subplot(1,2,2);
 hold on
 plotEnvironment(obstPts, regionMin, regionMax, start, goal);
 plot(x(X,:),x(Y,:));

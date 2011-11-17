@@ -11,10 +11,10 @@ k = 0.5;     % steering control proportional constant.
 
 % Simulation stop parameters
 simMaxIter = 2000;    % how long to run before giving up?
-simGoalThresh = 0.5;  % how close to goal before done?
+simGoalThresh = 0.25;  % how close to goal before done?
 
 % Initial vehicle state [heading, x, y]
-x0 = [0 0 0]';  % n.b. constant velocity model
+x0 = [0 -4 -4]';  % n.b. constant velocity model
 % Friendly index constants:
 HEAD = 1;
 X = 2;
@@ -23,11 +23,11 @@ Y = 3;
 % (convenience) Start position:
 start = x0(X:Y)';
 % Goal position:
-goal = [5 5]; 
+goal = [4 4]; 
 
 % Region bounds (Define lower left, upper right corners of rectangle) (m)
-regionMin = [-2 -2];
-regionMax = [8 8];
+regionMin = [-5 -5];
+regionMax = [5 5];
 
 % Number of obstacles:
 numObsts = 6;
@@ -156,11 +156,6 @@ while size(open, 1) ~= 0
   open = open(2:end,:);
 end
 
-figure(1);
-clf();
-subplot(1,2,1);
-imagesc(xaxis, yaxis, cost');
-set(gca, 'YDir', 'normal');
 
 % Calculate the gradient of the costmap
 costdx = zeros(size(map));
@@ -213,8 +208,10 @@ for i=1:size(map,1)
 end
 
 % Plot a robot trajectory.
-x = x0;
-u = 0;
+x = x0;  % Record robot states
+u = 0;   % Record steering control input
+r = 0;   % Record direction reference.
+g = 0;   % Gradient direction
 
 k = 1;
 while 1
@@ -238,9 +235,9 @@ while 1
     break
   end
 
-  % Reference position is the gradient direction
-  gradDir = atan2(-costdy(i,j), -costdx(i,j));
-  err =  gradDir - x(HEAD,k-1);
+  % Reference heading is negative cost gradient direction.
+  r(k) = atan2(-costdy(i,j), -costdx(i,j));
+  err =  r(k) - x(HEAD,k-1);
   if (err > pi)
     err = err - 2*pi;
   end
@@ -256,9 +253,21 @@ while 1
   x(HEAD,k) = x(HEAD,k-1) + dt*v*sin(u(k-1))/L;
 end
 
-subplot(1,2,2);
+figure(2);
+clf();
 hold on
 plotEnvironment(obstPts, regionMin, regionMax, start, goal);
 plot(x(X,:),x(Y,:));
+hold off
+
+figure(1);
+clf();
+hold on
+imagesc(xaxis, yaxis, cost');
+set(gca, 'YDir', 'normal');
+plot(x(X,:),x(Y,:),'k');
+axis equal 
+axis([regionMin(1) regionMax(1) regionMin(2) regionMax(2)]);
+colorbar
 hold off
 

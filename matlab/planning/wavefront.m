@@ -11,10 +11,10 @@ k = 0.5;     % steering control proportional constant.
 
 % Simulation stop parameters
 simMaxIter = 2000;    % how long to run before giving up?
-simGoalThresh = 0.25;  % how close to goal before done?
+simGoalThresh = 0.10;  % how close to goal before done?
 
 % Initial vehicle state [heading, x, y]
-x0 = [0 -4 -4]';  % n.b. constant velocity model
+x0 = [0 -0.9 -0.9]';  % n.b. constant velocity model
 % Friendly index constants:
 HEAD = 1;
 X = 2;
@@ -23,26 +23,33 @@ Y = 3;
 % (convenience) Start position:
 start = x0(X:Y)';
 % Goal position:
-goal = [4 4]; 
+goal = [0.9 0.9]; 
 
 % Region bounds (Define lower left, upper right corners of rectangle) (m)
-regionMin = [-5 -5];
-regionMax = [5 5];
+regionMin = [-1 -1];
+regionMax = [1 1];
 
 % Number of obstacles:
-numObsts = 6;
+numObsts = 1;
 % Size bounds on obstacles:
-minLen.a = 0.5;
-maxLen.a = 3;
-minLen.b = 0.5;
-maxLen.b = 3;
+minLen.a = 0.1;
+maxLen.a = 0.2;
+minLen.b = 0.1;
+maxLen.b = 0.2;
 
 % Generate a random map:
-[obstA, obstB, obstPts] = polygonal_world(regionMin+[.5 .5], regionMax-[.5 .5], ...
-    minLen, maxLen, numObsts, start, goal, 0.5, 10000); 
+%[obstA, obstB, obstPts] = polygonal_world(regionMin, regionMax, ...
+%    minLen, maxLen, numObsts, start, goal, 0.5, 10000); 
+
+% Specify obstacle polygons explicitly.
+obstPts = [ -1.0 -0.6 0.2 -0.6;
+            -1.0 0.2 0.2 0.2;
+            -0.4 0.2 1.0 0.2; 
+            -0.4 -0.6 1.0 -0.6; ];
+numObsts = size(obstPts,2)/2;
 
 % Generate an occupancy grid map:
-res = 0.10; % occupancy grid resolution
+res = 0.01; % occupancy grid resolution
 xaxis = [regionMin(1):res:regionMax(1)];
 yaxis = [regionMin(2):res:regionMax(2)];
 for k=1:length(yaxis)
@@ -116,6 +123,16 @@ for i = 1:length(xaxis)
     reachable = 0;
     for k=1:size(adjacent,1)
       adj = [i j]+adjacent(k,:);
+      % Make sure adjacent cell is in the map
+      if min(adj) < 1
+        continue
+      end
+      if adj(1) > length(xaxis)
+        continue
+      end
+      if adj(2) > length(yaxis)
+        continue
+      end
       if map(adj(1),adj(2)) == 0
         reachable = 1;
         break

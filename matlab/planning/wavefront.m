@@ -42,10 +42,10 @@ maxLen.b = 0.2;
 %    minLen, maxLen, numObsts, start, goal, 0.5, 10000); 
 
 % Specify obstacle polygons explicitly.
-obstPts = [ -1.0 -0.4 0.5 -0.2;
-            -1.0 0.0 0.5 0.6;
-            -0.4 0.0 1.0 0.6; 
-            -0.4 -0.4 1.0 -0.2; ];
+obstPts = [ -0.5 -0.4 0.5 -0.2;
+            -0.5 0.2 0.5 0.6;
+            0.0 0.2 1.0 0.6; 
+            0.0 -0.4 1.0 -0.2; ];
 numObsts = size(obstPts,2)/2;
 
 % Generate an occupancy grid map:

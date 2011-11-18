@@ -14,7 +14,7 @@ simMaxIter = 2000;    % how long to run before giving up?
 simGoalThresh = 0.10;  % how close to goal before done?
 
 % Initial vehicle state [heading, x, y]
-x0 = [0 -0.9 -0.9]';  % n.b. constant velocity model
+x0 = [0 -0.5 0.8]';  % n.b. constant velocity model
 % Friendly index constants:
 HEAD = 1;
 X = 2;
@@ -23,11 +23,11 @@ Y = 3;
 % (convenience) Start position:
 start = x0(X:Y)';
 % Goal position:
-goal = [0.9 0.9]; 
+goal = [1.2 -0.8]; 
 
 % Region bounds (Define lower left, upper right corners of rectangle) (m)
-regionMin = [-1 -1];
-regionMax = [1 1];
+regionMin = [-2 -2];
+regionMax = [2 2];
 
 % Number of obstacles:
 numObsts = 1;
@@ -42,10 +42,10 @@ maxLen.b = 0.2;
 %    minLen, maxLen, numObsts, start, goal, 0.5, 10000); 
 
 % Specify obstacle polygons explicitly.
-obstPts = [ -1.0 -0.6 0.2 -0.6;
-            -1.0 0.2 0.2 0.2;
-            -0.4 0.2 1.0 0.2; 
-            -0.4 -0.6 1.0 -0.6; ];
+obstPts = [ -1.0 -0.4 0.5 -0.2;
+            -1.0 0.0 0.5 0.6;
+            -0.4 0.0 1.0 0.6; 
+            -0.4 -0.4 1.0 -0.2; ];
 numObsts = size(obstPts,2)/2;
 
 % Generate an occupancy grid map:

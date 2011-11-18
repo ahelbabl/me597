@@ -248,7 +248,7 @@ class ControllerEstimator:
     return
 
   def _poseCb(self, pose):
-#    print("Pose: x: {0}, y: {1}, h: {2}".format(pose.X, pose.Y, pose.Yaw)) 
+# print("Pose: x: {0}, y: {1}, h: {2}".format(pose.X, pose.Y, pose.Yaw)) 
     if not self.running:
       return
     if (abs(pose.X) > 900) or (abs(pose.Y) > 900) or (abs(pose.Yaw) > 900):

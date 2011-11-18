@@ -4,6 +4,7 @@
 
 import math as m
 import numpy as np
+from collections import namedtuple
 from controller_estimator import *
 
 Range = namedtuple('Range', 'min max incr')
@@ -13,12 +14,12 @@ class GradientDescender(ControllerEstimator):
     """ costFile - path to a comma separated file storing a precomputed costmap
         xRange - defines the x positions corresponding to costmap row indices
         yRange - defines the y positions corresponding to costmap col indices """
-    ContollerEstimator.__init__(self)
+    ControllerEstimator.__init__(self)
     self.xRange = xRange
     self.yRange = yRange
  
     # Read the costmap 
-    mapFile = open('cost.map','r')
+    mapFile = open(costFile, 'r')
     # Tokenize the file:
     splitMap = [[i.strip() for i in line.split(',')] for line in mapFile]
     # Trim an empty row (which happens when file ends with a newline):
@@ -38,11 +39,11 @@ class GradientDescender(ControllerEstimator):
     j = int(round((Y - self.yRange.min) / self.yRange.incr))
 
     # Range check on cost map
-    if (i<0) or (i >= self.costMap.shape[0])) or \
+    if (i<0) or (i >= self.costMap.shape[0]) or \
        (j<0) or (j >= self.costMap.shape[1]):
       self._halt()
       return
 
-    ref = m.atan2(self.costGrad(1,i,j), self.costGrad(0,i,j))
-    self._setSteeringAngle(self._wrapAngle(ref - ang))
+    ref = m.atan2(-self.costGrad[1][i,j], -self.costGrad[0][i,j])
+    self.setSteeringAngle(self._wrapAngle(ref - ang))
     

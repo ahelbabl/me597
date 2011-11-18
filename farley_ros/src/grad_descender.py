@@ -26,7 +26,7 @@ class GradientDescender(ControllerEstimator):
     if splitMap[-1][0] == '':
       splitMap = splitMap[:-1]
     # Parse tokens as int and store in numpy array.
-    self.costMap = np.array([[int(j) for j in i] for i in splitMap])
+    self.costMap = np.array([[float(j) for j in i] for i in splitMap])
 
     self.costGrad = np.gradient(self.costMap)
 

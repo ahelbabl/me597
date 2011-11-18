@@ -4,15 +4,22 @@ clear all; close all; clc; clf;
 %% Setting up the environment
 % Boundaries
 posMinBound = [-2 -2];
-posMaxBound = [25 20];
+posMaxBound = [2 2];
 
 % Start and end(goal) position
-startPos = [24 0];
-endPos = [6 5];
+startPos = [-0.5 0.8];
+endPos = [1.2 -0.8];
 
 % Loading up the obstacle positions
-load('obsPtsStore.mat');
-numObsts = 6;
+% load('obsPtsStore.mat');
+% numObsts = 6;
+
+% Specify obstacle polygons explicitly.
+obsPtsStore = [-1 -0.5 0.5 0;
+               -1 0 0.5 0.8;
+                -0.5 0 1.0 0.8; 
+                -0.5 -0.5 1.0 0];
+numObsts = size(obsPtsStore,2)/2;
 
 % Computing the centroids of the obstacles
 for i=1:numObsts
@@ -26,15 +33,15 @@ plotEnvironment(obsPtsStore, posMinBound, posMaxBound, startPos, endPos);
 hold off
 
 %% Setting up the potential field
-Katt = 0.2;     % Scale of the attractive potential
-Krep = 1000;    % Scale of the repulsive potential
-r0 = 0.5;       % Radius of repulsion from the closest point of obstacles
-rc0 = 4;        % Raidus of repulsion from the centre of obstacles
-Vmax = 50;      % Upper bound on potential
-gVmax = 10;     % 
-gVmin = -10;
-dx = .4;        % Grid size for x
-dy = .4;        % Grid size for y
+Katt = 2;       % Scale of the attractive potential
+Krep = 10;      % Scale of the repulsive potential
+r0 = 0.24;      % Radius of repulsion from the closest point of obstacles
+rc0 = 0.96;     % Raidus of repulsion from the centre of obstacles
+Vmax = 10;      % Upper bound on potential
+gVmax = 5;      % Upper bound on potential gradient
+gVmin = -5;     % Lower bound on potential gradient
+dx = .04;       % Grid size for x
+dy = .04;       % Grid size for y
 
 % Produce the coordinates of a rectangular grid (X,Y)
 [X,Y] = meshgrid([posMinBound(1):dx:posMaxBound(1)],...
@@ -85,9 +92,8 @@ for i=1:length(X(:,1))
     end
 end
 
-% Simulate a robot moving through the environment following steepest
-% descent, recalculated for current position
-Tmax = 10000;
+%% Simulating a path down the gradient descent
+Tmax = 10000;           % Maximum time step 
 x = zeros(2,Tmax);      % State vectors [x y]
 x(:,1) = startPos';     % Initial position
 dx = 0.01;              % Position increment
@@ -113,12 +119,13 @@ while ((norm(gVcur)>0.01) && (t<Tmax))
             end
         end
     end
-    x(:,t) = x(:,t-1)-dx.*gVcur';       % Gradient descent implementation
-    
+    x(:,t) = x(:,t-1)-dx.*gVcur';   % Gradient descent implementation
 end
 
+% Graph the path found
 figure(1); hold on;
 plot(x(1,1:t), x(2,1:t), 'g*');
-plot(
-% figure(4);
-% plot(x(:,1:t)');
+
+% Graph the gradient descent
+figure(2); clf; hold on
+surf(X,Y,V);

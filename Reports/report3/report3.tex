@@ -6,7 +6,7 @@
 \usepackage[parfill]{parskip}
 
 \title{ME 597 Lab 3 Report}
-\author{Iain Peet \and Andrei Danaila \and Kevin Kyeong \and Abdel Hamid \and Ahmed Salam}
+\author{Iain Peet \and Andrei Danaila \and Kevin Kyeong \and Abdel Hamid \and Douche Salam}
 
 \begin{document}
 \maketitle
@@ -14,9 +14,22 @@
 \clearpage
 
 \section{Introduction}
+In this lab exercise the Potential Fields and Wavefront methods are implemented for planning the robot's path around a know obstacle grid map. The methods produce a path that the robot can follow to travel from a given start position towards a predefined goal while avoiding known obstacles.
+
+\section{Potential Fields Path Planning}
+\subsection{Standard Method}
+The potential field method defines 
+
+\subsection{Steering}
+The robot follows the planned path by steering towards the angle of steepest decent in the potential field map. This allows the robot to calculate the steering angle from any position on the map where the gradient is defined, which is essentially in every free cell in the grid.
+
+Alternatively, we can define waypoints along the path of steepest decent and use the Stanley non-linear steering controller to follow it, but this would be more error prone due to the robot's poor steering which makes it more likely to deviate significantly from the intended path.
+
+\subsection{Extended Potential Fields}
 Placeholder
 
 \section{Wavefront Path Planning}
 Placeholder
+
 
 \end{document}

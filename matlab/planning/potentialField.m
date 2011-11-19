@@ -2,7 +2,7 @@
 clear all; close all; clc; clf;
 
 %% Setting up the environment
-% Boundaries
+% Environment(map) boundaries
 posMinBound = [-2 -2];
 posMaxBound = [2 2];
 
@@ -14,23 +14,23 @@ endPos = [1.2 -0.8];
 % load('obsPtsStore.mat');
 % numObsts = 6;
 
-% Specify obstacle polygons explicitly.
-obsPtsStore = [-1 -0.5 0.5 0;
+% Specifying the obstacle positions
+obsPts = [-1 -0.5 0.5 0;
                -1 0 0.5 0.8;
-                -0.5 0 1.0 0.8; 
-                -0.5 -0.5 1.0 0];
-numObsts = size(obsPtsStore,2)/2;
-
-% Computing the centroids of the obstacles
-for i=1:numObsts
-    obsCentroid(i,:)...
-    = (obsPtsStore(1,2*(i-1)+1:2*i) + obsPtsStore(3,2*(i-1)+1:2*i))/2;
-end
+               -0.5 0 1.0 0.8; 
+               -0.5 -0.5 1.0 0];
+numObs = size(obsPts,2)/2;
 
 % Plotting the environment
 figure(1); clf; hold on;
-plotEnvironment(obsPtsStore, posMinBound, posMaxBound, startPos, endPos);
+plotEnvironment(obsPts, posMinBound, posMaxBound, startPos, endPos);
 hold off
+
+% Computing the centroids of the obstacles
+for i=1:numObs
+    obsCentroid(i,:)...
+    = (obsPts(1,2*(i-1)+1:2*i) + obsPts(3,2*(i-1)+1:2*i))/2;
+end
 
 %% Setting up the potential field
 Katt = 2;       % Scale of the attractive potential
@@ -43,32 +43,35 @@ gVmin = -5;     % Lower bound on potential gradient
 dx = .04;       % Grid size for x
 dy = .04;       % Grid size for y
 
-% Produce the coordinates of a rectangular grid (X,Y)
+% Producing the coordinates of a rectangular grid (X,Y)
 [X,Y] = meshgrid([posMinBound(1):dx:posMaxBound(1)],...
                  [posMinBound(2):dy:posMaxBound(2)]);
-
-%Calculate potential field at each grid point
-V = zeros(size(X));     % Potential field points
 [n,m] = size(X);        % Size of the grid points
+V = zeros(size(X));     % Potential field points
 gV = zeros(2,n,m);      % Potential field gradients
+
+% Computing potential field/gradient at each grid point
 for i=1:length(X(:,1))
     for j=1:length(Y(1,:))
-        % Current grid point
+        % Storing the position of the current grid point
         pos = [X(i,j) Y(i,j)];
-        % Attractive potential
+        
+        % Attractive potential computation
         V(i,j) = 1/2*Katt*norm(pos-endPos)^2;   % Potential
         gV(:,i,j) = Katt*(pos-endPos);          % Gradient
         
-        % Repulsive potentials
-        for m=1:numObsts
-            curobs = obsPtsStore(:,2*(m-1)+1:2*m);
-            if (inpolygon(pos(1),pos(2),curobs(:,1),curobs(:,2)))
-                V(i,j) = Vmax;
+        % Repulsive potential computation
+        for m=1:numObs
+            curObs = obsPts(:,2*(m-1)+1:2*m);
+            % If the grid point falls in the obstacles
+            if (inpolygon(pos(1),pos(2),curObs(:,1),curObs(:,2)))
+                V(i,j) = Vmax;          % Set the potential as the maximum
                 gV(:,i,j) = [NaN NaN];
+            % Otherwise (if the grid point is outside the obstacles)
             else
-                % Find potential based on minimum distance to obstacle
-                curpoly = [curobs curobs([2:end, 1],:)];
-                [minD,minPt, d, pt, ind] = minDistToEdges(pos, curpoly);
+                % Potential based on minimum distance to obstacles
+                curPoly = [curObs curObs([2:end, 1],:)];
+                [minD, minPt, d, pt, ind] = minDistToEdges(pos, curPoly);
                 if (minD < r0)
                     V(i,j) = V(i,j) + 1/2*Krep*(1/minD-1/r0)^2;
                     gV(:,i,j) = gV(:,i,j) +...
@@ -86,9 +89,9 @@ for i=1:length(X(:,1))
                 end
             end
         end
-        V(i,j) = max(0,min(V(i,j),Vmax));
-        gV(1,i,j) = max(gVmin,min(gV(1,i,j),gVmax));
-        gV(2,i,j) = max(gVmin,min(gV(2,i,j),gVmax));
+        V(i,j) = max(0, min(V(i,j), Vmax));
+        gV(1,i,j) = max(gVmin, min(gV(1,i,j), gVmax));
+        gV(2,i,j) = max(gVmin, min(gV(2,i,j), gVmax));
     end
 end
 
@@ -103,13 +106,13 @@ while ((norm(gVcur)>0.01) && (t<Tmax))
     t = t+1;
     pos = x(:,t-1)';
     gVcur = Katt*(pos-endPos);
-    for m=1:numObsts
-        curobs = obsPtsStore(:,2*(m-1)+1:2*m);
-        if (inpolygon(pos(1),pos(2),curobs(:,1),curobs(:,2)))
+    for m=1:numObs
+        curObs = obsPts(:,2*(m-1)+1:2*m);
+        if (inpolygon(pos(1),pos(2),curObs(:,1),curObs(:,2)))
             gVcur = [NaN NaN];
         else
-            curpoly = [curobs curobs([2:end, 1],:)];
-            [minD,minPt, d, pt, ind] = minDistToEdges(pos, curpoly);
+            curPoly = [curObs curObs([2:end, 1],:)];
+            [minD,minPt, d, pt, ind] = minDistToEdges(pos, curPoly);
             if (minD < r0)
                 gVcur = gVcur + Krep*(-1/minD+1/r0)*(pos-minPt)/minD^(3);
             end

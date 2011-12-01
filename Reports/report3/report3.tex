@@ -13,7 +13,7 @@
 
 \clearpage
 
-\section{Introduction}
+\section*{Introduction}
 In this lab exercise the Potential Fields and Wavefront planning methods are implemented for planning the trajectory of the robot around a pre-defined obstacle grid map. The methods produce a path that the robot can follow to travel from a given start position towards a pre-defined goal while avoiding known obstacles.
 
 \section{Potential Fields Path Planning}
@@ -52,6 +52,8 @@ margin of safety to compensate for the lack of steering bandwidth.
 
 
 \subsection{Extended Potential Fields}
+
+\clearpage
 \section{Wavefront Path Planning}
 
 \subsection{Algorithm Description}
@@ -123,4 +125,7 @@ A serious limitation of the wavefront algorithm in this application is the inabi
 One possibility would be to extend the occupancy grid to three dimensions, with heading as the third dimension.  The adjacent cells could then be defined to be more plausible state transitions:  in the x and y dimensions, the robot must transition to the neighbor nearest to the current heading co-ordinate.  Heading may remain the same, or transition to adjacent headings.
 
 It is expected that such a problem definition would result in a smoother path, which would be more easily tracked by the steering controller.
+
+\section*{Conclusion}
+
 \end{document}

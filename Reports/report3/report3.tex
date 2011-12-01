@@ -29,7 +29,40 @@ Alternatively, we can define waypoints along the path of steepest decent and use
 Placeholder
 
 \section{Wavefront Path Planning}
-Placeholder
 
+\subsection{Description of Algorithm}
+The wavefront planning algorithm is fairly simple in principle.  Cost is propagated outward from the goal, with each cell being assigned a cost one greater than the minimum cost of cells reachable from that cell.  It is equivalent to interpret the occupancy grid as a graph where cells are nodes and cells which are reachable from each other are connected by edges.  All edges are assigned a constant cost, and the costs of reaching each cell from the goal are found using Dijkstra's Algorithm.
+
+For this particular application, all cells which are horizonatally, vertically, or diagonally adjacent to a cell are considered to be reachable from that cell.
+
+The wavefront cost computation algorithm is as follows:
+
+\begin{itemize}
+ \item Initialize the cost map to 0.
+ \item Place the goal cell in the open set, with cost 1.
+ \item While there are cells in the open set, \begin{itemize}
+  \item Remove a cell from the open set.  This is the current cell.
+  \item For each cell reachable from the current cell, \begin{itemize}
+    \item If the cell is occupied, move it directly to the closed set, with cost 0.
+    \item If the cell is in the unreached set, move it to the open set and assign it a cost one greater than the current open cell.
+  \end{itemize}
+  \item Place the current cell into the closed set.
+ \end{itemize}
+\end{itemize}
+
+In the completed cost map, cells which have a cost of zero are obstacles.  For all other cells, the shortest path to the goal requires $n-1$ moves, where $n$ is the cost of the cell.  In order to traverse a shortest path to the goal, the actor must always move to a cell which has lower cost than the current cell.
+
+For the actual robot, a wavefront descent steering controller is defined as follows.  First, the optimal descent direction is computed as follows:
+
+\begin{equation}
+\theta_{ref} = tan^{-1}( \frac{ - \frac{\partial C}{\partial y} }{ - \frac{\partial C}{\partial x} } )
+\end{equation}
+
+The steering controller is a simple unity feedback controller:
+\begin{equation}
+\delta = \theta_{ref} - \theta 
+\end{equation}
+
+\subsection{Simulation Results}
 
 \end{document}

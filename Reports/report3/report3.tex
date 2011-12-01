@@ -30,8 +30,8 @@ Placeholder
 
 \section{Wavefront Path Planning}
 
-\subsection{Description of Algorithm}
-The wavefront planning algorithm is fairly simple in principle.  Cost is propagated outward from the goal, with each cell being assigned a cost one greater than the minimum cost of cells reachable from that cell.  It is equivalent to interpret the occupancy grid as a graph where cells are nodes and cells which are reachable from each other are connected by edges.  All edges are assigned a constant cost, and the costs of reaching each cell from the goal are found using Dijkstra's Algorithm.
+\subsection{Algorithm Description}
+The wavefront planning algorithm is fairly simple in principle.  Cost is propagated outward from the goal, with each cell being assigned a cost one greater than the minimum cost of cells reachable from that cell.  Equivalently, the occupancy grid may be interpreted as a graph where cells are nodes and cells which are reachable from each other are connected by edges.  All edges are assigned a constant cost, and the costs of reaching each cell from the goal are found using Dijkstra's Algorithm.
 
 For this particular application, all cells which are horizonatally, vertically, or diagonally adjacent to a cell are considered to be reachable from that cell.
 
@@ -93,4 +93,10 @@ Figure \ref{wave_sim} shows simulated results for two different random maps.  No
 
 Figure \ref{wave_meas} shows simulated and measured robot trajectories.  The true robot does not steer as sharply as the simulation predicts, which suggests that the modelled maximum steering angle is incorrect.  Otherwise, the measured behaviour appears consistent with expectation.
 
+\subsection{Potential Improvements}
+A serious limitation of the wavefront algorithm in this application is the inability to account for the robot's kinematic constraints.  
+
+One possibility would be to extend the occupancy grid to three dimensions, with heading as the third dimension.  The adjacent cells could then be defined to be more plausible state transitions:  in the x and y dimensions, the robot must transition to the neighbor nearest to the current heading co-ordinate.  Heading may remain the same, or transition to adjacent headings.
+
+It is expected that such a problem definition would result in a smoother path, which would be more easily tracked by the steering controller.
 \end{document}

@@ -63,6 +63,34 @@ The steering controller is a simple unity feedback controller:
 \delta = \theta_{ref} - \theta 
 \end{equation}
 
+It is likely that the shortest descent paths provided by the wavefront algorithm violate the kinematic constraints of the robot.  The algorithm is adjusted as follows, to allows for path tracking error.  
+
+First, buffer regions are added around obstacles, which are considered to be obstacle region for the purpose of wavefront cost computation.  This ensures that the path provides a certain amount of tolerance for tracking error.
+
+Second, obstacle regions are assigned high cost values, such that their gradient always points to the centre of the obstacle.  This ensures that, if the robot path overshoots into the buffer region, the cost gradient will be defined such that the robot will steer out of the buffer area and back into the 'good' region.
+
 \subsection{Simulation Results}
+
+\begin{figure}
+ \centering
+ \includegraphics[scale=0.45]{wavefront_good.png}
+ \includegraphics[scale=0.45]{wavefront_kinematic_fail.png}
+ \caption{Wavefront costmaps and robot trajectories, for two randomly generated maps.}
+ \label{wave_sim}
+\end{figure}
+
+Figure \ref{wave_sim} shows simulated results for two different random maps.  Note how, in the second simulation, the robot overshoots the desired trajectories, and recovers as intended.
+
+\clearpage
+\subsection{Measured Results}
+
+\begin{figure} [hbt]
+ \centering
+ \includegraphics[scale=0.75]{wavefront_meas.png}
+ \caption{Simulated and measured robot trajectories, for lab obstacle set-up}
+ \label{wave_meas}
+\end{figure}
+
+Figure \ref{wave_meas} shows simulated and measured robot trajectories.  The true robot does not steer as sharply as the simulation predicts, which suggests that the modelled maximum steering angle is incorrect.  Otherwise, the measured behaviour appears consistent with expectation.
 
 \end{document}

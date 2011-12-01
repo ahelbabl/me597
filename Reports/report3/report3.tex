@@ -14,11 +14,11 @@
 \clearpage
 
 \section{Introduction}
-In this lab exercise the Potential Fields and Wavefront methods are implemented for planning the robot's path around a know obstacle grid map. The methods produce a path that the robot can follow to travel from a given start position towards a predefined goal while avoiding known obstacles.
+In this lab exercise the Potential Fields and Wavefront planning methods are implemented for planning the trajectory of the robot around a pre-defined obstacle grid map. The methods produce a path that the robot can follow to travel from a given start position towards a pre-defined goal while avoiding known obstacles.
 
 \section{Potential Fields Path Planning}
-\subsection{Standard Method}
-The potential field method defines 
+\subsection{Theory}
+The potential fields method is based on the concept of potential function of which value is viewed as energy and gradient is force.  The gradient is a vector $\nabla U(q) = DU(q)^T = [\frac{\partial U}{\partial q_1}, . . . , \frac{\partial U}{\partial q_m}]^T$ which points in the direction that locally maximally increases U \footnote{S. Thrun. \emph{Principles of Robot Motion}. The MIT Press, 2005. (pg.77)}.  This gradient then defines a vector field on an occupancy grid, and directs a robot as if a particle moves in a gradient vector field.
 
 \subsection{Steering}
 The robot follows the planned path by steering towards the angle of steepest decent in the potential field map. This allows the robot to calculate the steering angle from any position on the map where the gradient is defined, which is essentially in every free cell in the grid.

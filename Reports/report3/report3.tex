@@ -18,12 +18,44 @@ In this lab exercise the Potential Fields and Wavefront planning methods are imp
 
 \section{Potential Fields Path Planning}
 \subsection{Theory}
-The potential fields method is based on the concept of potential function of which value is viewed as energy and gradient is force.  The gradient is a vector $\nabla U(q) = DU(q)^T = [\frac{\partial U}{\partial q_1}, . . . , \frac{\partial U}{\partial q_m}]^T$ which points in the direction that locally maximally increases U\footnote{S. Thrun. \emph{Principles of Robot Motion}. The MIT Press, 2005. (pg.77)}.  This gradient then defines a vector field on an occupancy grid, and directs a robot as if it were a particle moving in a gradient vector field\footnotemark[\value{footnote}].  Intuitively speaking, this approach can be viewed as if the gradients are forces acting on a positively charged particle which is being attracted to the negatively charged target goal\footnotemark[\value{footnote}].  Additionally, the obstacles are considered as positively charged and defined as repulsive forces thus directing the robot away from the obstacles.  Then, combining the potential functions of attractive and repulsive forces and negating the gradient of the potential function, a robot can simply follow the path of the gradient descent.
+The potential fields method is based on the concept of potential function of which value is viewed as energy and gradient is force.  The gradient is a vector $\nabla U(q) = DU(q)^T = [\frac{\partial U}{\partial q_1}, . . . , \frac{\partial U}{\partial q_m}]^T$ which points in the direction that locally maximally increases U\footnote{S. Thrun. \emph{Principles of Robot Motion}. The MIT Press, 2005. (pg.77)}.  This gradient then defines a vector field on an occupancy grid, and directs a robot as if it were a particle moving in a gradient vector field\footnotemark[\value{footnote}].  Intuitively speaking, this approach can be viewed as if the gradients are forces acting on a positively charged particle which is being attracted to the negatively charged target goal\footnotemark[\value{footnote}].  Additionally, the obstacles are considered as positively charged and defined as repulsive forces thus directing the robot away from the obstacles.  Then, combining the potential functions of attractive and repulsive forces and negating the gradient of the potential function, a robot can simply follow the path of the gradient descent to reach the target goal where the gradient vanishes.
+\begin{equation}
+	U(q) = U_{att}(q) + U_{rep}(q)
+\end{equation}
+\begin{equation}
+	\nabla U(q) = V(q) = V_{att}(q) + V_{rep}(q)
+\end{equation}
 
-\subsection{Steering}
-The robot follows the planned path by steering towards the angle of steepest decent in the potential field map. This allows the robot to calculate the steering angle from any position on the map where the gradient is defined, which is essentially in every free cell in the grid.
+\subsubsection{The Attractive Potential $K_{attractive}$}
+There are different ways to define the attractive potential.  The method used in this lab is one that grows quadratically with the distance to $q_{goal}$.  Hence, the attractive potential function is defined as
+\begin{equation}
+	U_{att}(q) = \frac{1}{2}K_{att}d^2(q, q_{goal})
+\end{equation}
+and the gradient is
+\begin{equation}
+	\nabla U_{att}(q) = \nabla (\frac{1}{2}K_{att}d^2(q,q_{goal})) \\
+	= K_{att}(q-q_{goal})
+\end{equation}
+where $K_{att}$ is the attractive potential coefficient, essentially a scale factor determining the effect of the attractive potential in the potential function.  Such attractive potential can be illustrated as Figure \ref{f:potential_att_graph}.
+\begin{figure}[hbt]
+ \centering
+ \includegraphics[scale=0.5]{potential_attractive.png}
+ \caption{Graph of the Attractive Potential}
+ \label{f:potential_att_graph}
+\end{figure}
 
-Alternatively, we can define waypoints along the path of steepest decent and use the Stanley non-linear steering controller to follow it, but this would be more error prone due to the robot's poor steering which makes it more likely to deviate significantly from the intended path.
+\subsubsection{The Repulsive Potential $K_{repulsive}$}
+While the attractive potential is attracting the robot particle to the target goal, the repulsive potential is defined throughout the occupancy grid map to push the robot away from the obstacles.  The repulsive potential function is defined as
+\begin{equation}
+	U_{rep}(q) = 
+	\begin{cases}
+		\frac{1}{2}K_{rep}
+	\end{cases}
+\end{equation}
+
+
+\subsubsection{Extended Potential Field}
+% Douche Salam's section
 
 \subsection{Results and Observations}
 The wavefront method for path planning successfully plotted a map through the obstacles.

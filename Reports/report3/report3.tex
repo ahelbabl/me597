@@ -110,13 +110,12 @@ margin of safety to compensate for the lack of steering bandwidth.
  \caption{Potential field map surface plot.}
  \label{potField_Surf}
 \end{figure}
-\clearpage
 
 
 \subsection{Extended Potential Fields}
-The extended potential fields method follows from the theory of the potential fields described above, but extendes it by allowing the magnitude of the repulsive field for each obstacle to be weighted based on their bearing from the the robot's heading as it navigates through the map. This allows the robot to prioritize the avoidance of obstacles which are more likely to interfere with its motion, by reducing the weights for obstacles which are behind it or to the side, or perhaps completely ignoring them.
+The extended potential fields method follows from the theory of the potential fields described above, but extendes it by allowing the magnitude of the repulsive field for each obstacle to be weighted based on their bearing from the the robot's heading as it navigates through the map. This allows the robot to prioritize the avoidance of obstacles which are more likely to interfere with its motion; by setting higher weights for obstacles in front of the robot and reducing them for ones that are behind or to the side. The weighting function can be arbitrarily decided for the problem, for example by applying gradual decay or using a sharp cutoff.
 
-In our implementation of the method we defined a field of view in degrees that is centered around the front of the robot. Any obstacles that fall within the field of view are weighted normally, and anything outside of it is ignored (weighted by zero). Furthermore, this method was only implemented in simulation since it requires the local gradient to be calculated online based on the current position as the robot navigates the map; this differs significantly from the two other planning methods which allow the robot to read a pre-calculated gradient map.
+In our implementation of the method we defined a field of view in degrees that is centered around the front of the robot. Any obstacles that fall within the field of view are weighted equally, and anything outside of it is ignored (weighted by zero). Furthermore, this method was only implemented in simulation since it requires the local gradient to be calculated online based on the current position as the robot navigates the map; this differs significantly from the two other planning methods which allow the robot to read a pre-calculated gradient map.
 
 The following figure shows the result of planning using the extended potential fields method versus the standard method for a map with two obstacles. In this test the potential field is defined as 90 degrees. The figure shows the advantage of using the extended method as it plans a shorter path once the robot is clear of most of the obstacles.
 

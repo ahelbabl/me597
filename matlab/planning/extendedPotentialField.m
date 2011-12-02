@@ -109,7 +109,7 @@ for i=1:length(X(:,1))
 end
 
 %% Simulating a path down the gradient descent
-Tmax = 10000;           % Maximum time step 
+Tmax = 20000;           % Maximum time step 
 x = zeros(2,Tmax);      % State vectors [x y]
 x(:,1) = startPos';     % Initial position
 xExt = x;
@@ -186,6 +186,7 @@ while ((norm(gVcur)>0.01) && (t<Tmax))
     x(:,t) = x(:,t-1)-dx.*gVcur';   % Gradient descent implementation
     xExt(:,t) = xExt(:,t-1)-dx.*gVcurExt';   % Gradient descent implementation
     gVcurPrevExt = gVcurExt;
+    storeExt(t,:) = gVcurExt;
 end
 
 % Graph the path found

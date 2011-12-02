@@ -1,0 +1,198 @@
+% Potential field function simulation along with the steering controller
+clear all; close all; clc; clf;
+
+%% Setting up the environment
+% Environment(map) boundaries
+posMinBound = [-2 -2];
+posMaxBound = [2 2];
+
+% Start and end(goal) position
+startPos = [-0.5 0.8];
+endPos = [1.2 -0.8];
+
+% Specifying the obstacle positions
+obsPts = [-1 -0.5 0.5 0 ;
+               -1 0 0.5 0.8;
+               -0.5 0 1.0 0.8; 
+               -0.5 -0.5 1.0 0];
+numObs = size(obsPts,2)/2;
+
+% Number of obstacles
+numObs = 3;
+% Size bounds on obstacles
+minLen.a = 0.3;
+maxLen.a = 0.8;
+minLen.b = 0.3;
+maxLen.b = 0.8;
+% Random environment generation
+obstBuffer = 0.5;
+maxCount = 10000;
+seedNumber = rand('state');
+[aObsts,bObsts,obsPtsStore] = polygonal_world(posMinBound, posMaxBound, minLen, maxLen, numObs, startPos, endPos, obstBuffer, maxCount);
+for i=1:numObs
+    obsCentroid(i,:) = (obsPtsStore(1,2*(i-1)+1:2*i)+obsPtsStore(3,2*(i-1)+1:2*i))/2;
+end
+obsPts = obsPtsStore;
+
+% Plotting the environment
+figure(1); clf; hold on;
+plotEnvironment(obsPts, posMinBound, posMaxBound, startPos, endPos);
+hold off
+
+% Computing the centroids of the obstacles
+for i=1:numObs
+    obsCentroid(i,:)...
+    = (obsPts(1,2*(i-1)+1:2*i) + obsPts(3,2*(i-1)+1:2*i))/2;
+end
+
+%% Setting up the potential field
+Katt = 2;       % Scale of the attractive potential
+Krep = 10;      % Scale of the repulsive potential
+r0 = 0.24;      % Radius of repulsion from the closest point of obstacles
+rc0 = 0.96;     % Raidus of repulsion from the centre of obstacles
+Vmax = 10;      % Upper bound on potential
+gVmax = 5;      % Upper bound on potential gradient
+gVmin = -5;     % Lower bound on potential gradient
+dx = .04;       % Grid size for x
+dy = .04;       % Grid size for y
+
+% Producing the coordinates of a rectangular grid (X,Y)
+[X,Y] = meshgrid([posMinBound(1):dx:posMaxBound(1)],...
+                 [posMinBound(2):dy:posMaxBound(2)]);
+[n,m] = size(X);        % Size of the grid points
+V = zeros(size(X));     % Potential field points
+gV = zeros(2,n,m);      % Potential field gradients
+
+% Computing potential field/gradient at each grid point
+for i=1:length(X(:,1))
+    for j=1:length(Y(1,:))
+        % Storing the position of the current grid point
+        pos = [X(i,j) Y(i,j)];
+        
+        % Attractive potential computation
+        V(i,j) = 1/2*Katt*norm(pos-endPos)^2;   % Potential
+        gV(:,i,j) = Katt*(pos-endPos);          % Gradient
+        
+        % Repulsive potential computation
+        for m=1:numObs
+            curObs = obsPts(:,2*(m-1)+1:2*m);
+            % If the grid point falls in the obstacles
+            if (inpolygon(pos(1),pos(2),curObs(:,1),curObs(:,2)))
+                V(i,j) = Vmax;          % Set the potential as the maximum
+                gV(:,i,j) = [NaN NaN];
+            % Otherwise (if the grid point is outside the obstacles)
+            else
+                % Potential based on minimum distance to obstacles
+                curPoly = [curObs curObs([2:end, 1],:)];
+                [minD, minPt, d, pt, ind] = minDistToEdges(pos, curPoly);
+                if (minD < r0)
+                    V(i,j) = V(i,j) + 1/2*Krep*(1/minD-1/r0)^2;
+                    gV(:,i,j) = gV(:,i,j) +...
+                                Krep*(-1/minD+1/r0)*(pos'-minPt')/minD^(3);
+                end
+                % Add potential of distance to center, to avoid getting
+                % stuck on flat walls
+                centD = norm(pos-obsCentroid(m,:));
+                if (centD < rc0)
+                    V(i,j) =  V(i,j) + 1/2*Krep*(1/centD-1/rc0)^2;
+                    gV(:,i,j) = gV(:,i,j) +...
+                                Krep*(-1/centD+1/rc0)*...
+                                (pos'-obsCentroid(m,:)')/...
+                                centD^(3);
+                end
+            end
+        end
+        V(i,j) = max(0, min(V(i,j), Vmax));
+        gV(1,i,j) = max(gVmin, min(gV(1,i,j), gVmax));
+        gV(2,i,j) = max(gVmin, min(gV(2,i,j), gVmax));
+    end
+end
+
+%% Simulating a path down the gradient descent
+Tmax = 10000;           % Maximum time step 
+x = zeros(2,Tmax);      % State vectors [x y]
+x(:,1) = startPos';     % Initial position
+xExt = x;
+dx = 0.01;              % Position increment
+t = 1;                  % Initial time step
+gVcur = [1 1];          % Current grid point
+gVcurExt = gVcur;
+gVcurPrevExt = gVcurExt;
+
+% Any obstacles outside 120degrees FOV of robot 
+% not used for Potential Field computation
+Fov = 90 * (pi/180);
+
+while ((norm(gVcur)>0.01) && (t<Tmax))
+    t = t+1;
+    pos = x(:,t-1)';
+    posExt = xExt(:,t-1)';
+    gVcur = Katt*(pos-endPos);
+    gVcurExt = Katt*(posExt-endPos);
+    
+    %Extended potential field calculation
+    for m=1:numObs,
+        curObs = obsPts(:,2*(m-1)+1:2*m);
+        
+        %Determine if curObs vertices are within FOV
+        inFov = 0;
+        heading = atan2(gVcurPrevExt(1),gVcurPrevExt(2));
+        for k=1:4,
+            vertex = curObs(k,:);
+            angle = atan2( (vertex(2)-posExt(2)),(vertex(1)-posExt(1)) );
+            if( angle< heading+Fov/2 &&  angle> heading-Fov/2 ),
+                inFov = 1;
+                break;
+            end
+        end
+        if inFov == 0,
+            continue;
+        end
+        %End of inFov
+        
+        if (inpolygon(posExt(1),posExt(2),curObs(:,1),curObs(:,2)))
+            gVcurExt = [NaN NaN];
+        else
+            curPoly = [curObs curObs([2:end, 1],:)];
+            [minD,minPt, d, pt, ind] = minDistToEdges(posExt, curPoly);
+            if (minD < r0)
+                gVcurExt = gVcurExt + Krep*(-1/minD+1/r0)*(posExt-minPt)/minD^(3);
+            end
+            centD = norm(posExt-obsCentroid(m,:));
+            if (centD < rc0)
+                gVcurExt = gVcurExt + Krep*(-1/centD+1/rc0)*(posExt-obsCentroid(m,:))/centD^(3);
+            end
+        end   
+    end
+    
+    %Regular Potential Field calculation
+    for m=1:numObs
+        curObs = obsPts(:,2*(m-1)+1:2*m);
+        if (inpolygon(pos(1),pos(2),curObs(:,1),curObs(:,2)))
+            gVcur = [NaN NaN];
+        else
+            curPoly = [curObs curObs([2:end, 1],:)];
+            [minD,minPt, d, pt, ind] = minDistToEdges(pos, curPoly);
+            if (minD < r0)
+                gVcur = gVcur + Krep*(-1/minD+1/r0)*(pos-minPt)/minD^(3);
+            end
+            centD = norm(pos-obsCentroid(m,:));
+            if (centD < rc0)
+                gVcur = gVcur + Krep*(-1/centD+1/rc0)*(pos-obsCentroid(m,:))/centD^(3);
+            end
+        end
+    end
+    
+    x(:,t) = x(:,t-1)-dx.*gVcur';   % Gradient descent implementation
+    xExt(:,t) = xExt(:,t-1)-dx.*gVcurExt';   % Gradient descent implementation
+    gVcurPrevExt = gVcurExt;
+end
+
+% Graph the path found
+figure(1); hold on;
+plot(x(1,1:t), x(2,1:t), 'g');
+plot(xExt(1,1:t), xExt(2,1:t), 'b');
+
+% Graph the gradient descent
+figure(2); clf; hold on
+surf(X,Y,V);

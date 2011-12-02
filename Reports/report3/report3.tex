@@ -45,14 +45,45 @@ where $K_{att}$ is the attractive potential coefficient, essentially a scale fac
 \end{figure}
 
 \subsubsection{The Repulsive Potential $K_{repulsive}$}
-While the attractive potential is attracting the robot particle to the target goal, the repulsive potential is defined throughout the occupancy grid map to push the robot away from the obstacles.  The repulsive potential function is defined as
+While the attractive potential is attracting the robot particle to the target goal, the repulsive potential is defined throughout the occupancy grid map to push the robot away from the obstacles.  The repulsive potential function is inversely quadratically proportional to the distance of obstacles and defined as
 \begin{equation}
 	U_{rep}(q) = 
 	\begin{cases}
-		\frac{1}{2}K_{rep}
+		\frac{1}{2}K_{rep}(\frac{1}{D(q)}-\frac{1}{Q^*})^2, & D(q) \leq Q^{*} \\
+		0, & D(q) > Q^{*}
 	\end{cases}
 \end{equation}
+and the gradient is
+\begin{equation}
+	\nabla U_{rep}(q) = 
+	\begin{cases}
+		K_{rep}(\frac{1}{Q^*}-\frac{1}{D(q)})\frac{1}{D^2(q)}\nabla D(q), & D(q) \leq Q^{*} \\
+		0, & D(q) > Q^{*}
+	\end{cases}
+\end{equation}
+where $K_{rep}$ is a gain factor on the repulsive gradient and $Q^{*}$ is the threshold value that allows the robot to either ignore the effect of the repulsive potential from the particular obstacle when it's sufficiently far away from it.
 
+Additionally, it is to be noted that the repulsive potential function should be defined in terms of distances to individual obstacles rather than distance to the closet obstacle.  Otherwise, when a path is formed through points where the distances to obstacles are equidistant, some oscillations may be formed.
+
+Therefore, $D(q)$ is redefined as
+\begin{equation}
+	d_i(q) = \min d(q,c)
+\end{equation}
+where c includes the closest points to all the obstacles in the grid map.
+
+Then, the gradient of that is
+\begin{equation}
+	\nabla d_i(q) = \frac{q-c}{d(q,c)}
+\end{equation}
+
+Finally, the repulsive potential function is redefined as
+\begin{equation}
+	U_{rep_{i}}(q) = 
+	\begin{cases}
+		\frac{1}{2}K_{rep}(\frac{1}{d_i(q)}-\frac{1}{Q_i^*})^2, & \mbox{if } d_i(q) \leq Q_i^* \\
+		0 ,& \mbox{if } d_i(q) > Q_i^*
+	\end{cases}
+\end{equation}
 
 \subsubsection{Extended Potential Field}
 % Douche Salam's section

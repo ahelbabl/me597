@@ -25,11 +25,36 @@ The robot follows the planned path by steering towards the angle of steepest dec
 
 Alternatively, we can define waypoints along the path of steepest decent and use the Stanley non-linear steering controller to follow it, but this would be more error prone due to the robot's poor steering which makes it more likely to deviate significantly from the intended path.
 
-\subsection{Extended Potential Fields}
-Placeholder
+\subsection{Results and Observations}
+The wavefront method for path planning successfully plotted a map through the obstacles.
+The downside of this algorithm was noticed as resulting in substatial increase in steering controller usage
+when compared to the wavefront planning method. This was caused to the large number of varying
+gradients that the controller tried to follow on its way to the goal.
 
+\begin{figure}[hbt]
+ \centering
+ \includegraphics[scale=0.80]{potentialFieldMapNavigation.png}
+ \caption{Traversed path through the obstacle map using the potential field algorithm.}
+ \label{potFieldMap}
+\end{figure}
+
+From \ref{potFieldMap} it is noticed how even though the simulation predicted a sharper turn, 
+the robot steering controller could not follow it. Since the robot was not able to perform 
+such sharp turns, the volume of the each obstacle was increased in simulation as to provide an artificial
+margin of safety to compensate for the lack of steering bandwidth.
+
+\begin{figure}[hbt]
+ \centering
+ \includegraphics[scale=0.60]{Potential_Field_Surf_Plot.png}
+ \caption{Potential field map surface plot.}
+ \label{potField_Surf}
+\end{figure}
+
+
+\subsection{Extended Potential Fields}
 \section{Wavefront Path Planning}
-Placeholder
 
 
 \end{document}
+
+

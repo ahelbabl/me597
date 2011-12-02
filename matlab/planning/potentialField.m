@@ -125,10 +125,25 @@ while ((norm(gVcur)>0.01) && (t<Tmax))
     x(:,t) = x(:,t-1)-dx.*gVcur';   % Gradient descent implementation
 end
 
+inputDataFileName = '/../data/potential/state.dat';
+data_Import=importdata(inputDataFileName,' ');
+exp_x = data_Import(:,3);
+exp_y = data_Import(:,4);
+
+
 % Graph the path found
 figure(1); hold on;
 plot(x(1,1:t), x(2,1:t), 'g*');
+hold on
+plot(exp_x,exp_y)
+h_leg=legend('Obstacle','Obstacle','Planned Path', ...
+             'Actual Robot Path');
+set(h_leg,'FontSize',10);
+title('Simulation vs Experimental Navigation of Potential Field Map');
+
+
 
 % Graph the gradient descent
 figure(2); clf; hold on
 surf(X,Y,V);
+title('Potential Field Gradient Map');
